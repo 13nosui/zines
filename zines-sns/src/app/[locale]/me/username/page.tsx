@@ -11,6 +11,11 @@ import { getProfile, updateProfile, checkUsernameAvailability } from '@/lib/serv
 import { useDebounce } from '@/hooks/useDebounce'
 import { toast } from 'sonner'
 
+// Username validation regex: alphanumeric, underscore, dash
+const USERNAME_REGEX = /^[a-zA-Z0-9_-]+$/
+const MAX_USERNAME_LENGTH = 24
+const MIN_USERNAME_LENGTH = 3
+
 export default function UsernameEditPage() {
   const t = useTranslations()
   const router = useRouter()
@@ -49,6 +54,27 @@ export default function UsernameEditPage() {
     loadProfile()
   }, [user, t])
   
+  // Validate username format
+  const validateUsername = (value: string): string => {
+    if (!value) {
+      return ''
+    }
+    
+    if (value.length < MIN_USERNAME_LENGTH) {
+      return t('settings.profileSettings.usernameTooShort', { min: MIN_USERNAME_LENGTH })
+    }
+    
+    if (value.length > MAX_USERNAME_LENGTH) {
+      return t('settings.profileSettings.usernameTooLong', { max: MAX_USERNAME_LENGTH })
+    }
+    
+    if (!USERNAME_REGEX.test(value)) {
+      return t('settings.profileSettings.usernameInvalidFormat')
+    }
+    
+    return ''
+  }
+  
   // Check username availability
   useEffect(() => {
     const checkUsername = async () => {
@@ -57,8 +83,10 @@ export default function UsernameEditPage() {
         return
       }
       
-      if (debouncedUsername.length < 3) {
-        setUsernameError(t('settings.profileSettings.invalidUsername'))
+      // First validate format
+      const formatError = validateUsername(debouncedUsername)
+      if (formatError) {
+        setUsernameError(formatError)
         return
       }
       
@@ -76,8 +104,15 @@ export default function UsernameEditPage() {
     checkUsername()
   }, [debouncedUsername, user, originalUsername, t])
   
+  const handleUsernameChange = (value: string) => {
+    // Only allow valid characters and enforce max length
+    if (value.length <= MAX_USERNAME_LENGTH) {
+      setUsername(value)
+    }
+  }
+  
   const handleSave = async () => {
-    if (!user || usernameError || username === originalUsername || username.length < 3) return
+    if (!user || usernameError || username === originalUsername) return
     
     setIsSaving(true)
     
@@ -100,7 +135,7 @@ export default function UsernameEditPage() {
     router.push(`/${currentLocale}/me`)
   }
   
-  const isValid = username.length >= 3 && !usernameError && username !== originalUsername
+  const isValid = username.length >= MIN_USERNAME_LENGTH && !usernameError && username !== originalUsername
   
   return (
     <div className="min-h-screen bg-background">
@@ -134,13 +169,19 @@ export default function UsernameEditPage() {
                 label={t('settings.profileSettings.username')}
                 placeholder={t('settings.profileSettings.usernamePlaceholder')}
                 value={username}
-                onValueChange={setUsername}
+                onValueChange={handleUsernameChange}
                 isInvalid={!!usernameError}
                 errorMessage={usernameError}
                 isDisabled={isLoading || isSaving}
+                maxLength={MAX_USERNAME_LENGTH}
                 startContent={
                   <span className="material-symbols-rounded text-default-400">
                     person
+                  </span>
+                }
+                endContent={
+                  <span className="text-xs text-default-400">
+                    {username.length}/{MAX_USERNAME_LENGTH}
                   </span>
                 }
                 classNames={{
@@ -148,7 +189,7 @@ export default function UsernameEditPage() {
                 }}
               />
               <p className="text-xs text-default-500 mt-2">
-                {t('settings.profileSettings.usernameHint', { min: 3 })}
+                {t('settings.profileSettings.usernameHint', { min: MIN_USERNAME_LENGTH, max: MAX_USERNAME_LENGTH })}
               </p>
             </CardBody>
           </Card>
