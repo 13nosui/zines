@@ -1,6 +1,6 @@
 'use client'
 
-import { useClientAuthGuard } from '@/lib/auth/guards'
+import { useClientAuthGuard } from '@/lib/auth/client-guards'
 import { useEffect, useState } from 'react'
 import { Session } from '@supabase/supabase-js'
 

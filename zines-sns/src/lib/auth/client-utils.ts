@@ -1,5 +1,6 @@
+'use client'
+
 import { createClient } from '@/lib/supabase/client'
-import { createServerActionClient } from '@/lib/supabase/server'
 import { AuthError } from '@supabase/supabase-js'
 
 // Error message mapping for user-friendly messages
@@ -30,6 +31,10 @@ export function getAuthErrorMessage(error: AuthError | Error | unknown): string 
 export async function signInWithEmail(email: string, password: string) {
   const supabase = createClient()
   
+  if (!supabase) {
+    return { data: null, error: 'Authentication service unavailable' }
+  }
+  
   try {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -46,6 +51,10 @@ export async function signInWithEmail(email: string, password: string) {
 
 export async function signUpWithEmail(email: string, password: string) {
   const supabase = createClient()
+  
+  if (!supabase) {
+    return { data: null, error: 'Authentication service unavailable' }
+  }
   
   try {
     const { data, error } = await supabase.auth.signUp({
@@ -66,6 +75,10 @@ export async function signUpWithEmail(email: string, password: string) {
 
 export async function signInWithOAuth(provider: 'google' | 'github') {
   const supabase = createClient()
+  
+  if (!supabase) {
+    return { data: null, error: 'Authentication service unavailable' }
+  }
   
   try {
     const { data, error } = await supabase.auth.signInWithOAuth({
@@ -90,6 +103,10 @@ export async function signInWithOAuth(provider: 'google' | 'github') {
 export async function signOut() {
   const supabase = createClient()
   
+  if (!supabase) {
+    return { error: 'Authentication service unavailable' }
+  }
+  
   try {
     const { error } = await supabase.auth.signOut()
     if (error) throw error
@@ -102,6 +119,10 @@ export async function signOut() {
 
 export async function resetPassword(email: string) {
   const supabase = createClient()
+  
+  if (!supabase) {
+    return { data: null, error: 'Authentication service unavailable' }
+  }
   
   try {
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -119,6 +140,10 @@ export async function resetPassword(email: string) {
 export async function updatePassword(newPassword: string) {
   const supabase = createClient()
   
+  if (!supabase) {
+    return { data: null, error: 'Authentication service unavailable' }
+  }
+  
   try {
     const { data, error } = await supabase.auth.updateUser({
       password: newPassword,
@@ -129,34 +154,5 @@ export async function updatePassword(newPassword: string) {
     return { data, error: null }
   } catch (error) {
     return { data: null, error: getAuthErrorMessage(error) }
-  }
-}
-
-// Server-side auth functions
-export async function getSession() {
-  const supabase = await createServerActionClient()
-  
-  try {
-    const { data: { session }, error } = await supabase.auth.getSession()
-    
-    if (error) throw error
-    
-    return { session, error: null }
-  } catch (error) {
-    return { session: null, error: getAuthErrorMessage(error) }
-  }
-}
-
-export async function getUser() {
-  const supabase = await createServerActionClient()
-  
-  try {
-    const { data: { user }, error } = await supabase.auth.getUser()
-    
-    if (error) throw error
-    
-    return { user, error: null }
-  } catch (error) {
-    return { user: null, error: getAuthErrorMessage(error) }
   }
 }

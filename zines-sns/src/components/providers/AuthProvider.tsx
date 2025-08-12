@@ -1,15 +1,16 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
-import { User, Session } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
+import { Session, User } from '@supabase/supabase-js'
+import { createClient } from '@/lib/supabase/client'
 
-interface AuthContextType {
+type AuthContextType = {
   user: User | null
   session: Session | null
   loading: boolean
   signOut: () => Promise<void>
+  refreshSession: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -17,30 +18,32 @@ const AuthContext = createContext<AuthContextType>({
   session: null,
   loading: true,
   signOut: async () => {},
+  refreshSession: async () => {},
 })
 
-export function useAuth() {
+export const useAuth = () => {
   const context = useContext(AuthContext)
   if (!context) {
-    throw new Error('useAuth must be used within AuthProvider')
+    throw new Error('useAuth must be used within an AuthProvider')
   }
   return context
 }
 
-export function AuthProvider({ 
-  children,
-  initialSession 
-}: { 
+interface AuthProviderProps {
   children: React.ReactNode
-  initialSession?: Session | null 
-}) {
+  initialSession?: Session | null
+}
+
+export function AuthProvider({ children, initialSession = null }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(initialSession?.user ?? null)
-  const [session, setSession] = useState<Session | null>(initialSession ?? null)
+  const [session, setSession] = useState<Session | null>(initialSession)
   const [loading, setLoading] = useState(!initialSession)
   const router = useRouter()
   const supabase = createClient()
 
   useEffect(() => {
+    if (!supabase) return
+
     // Get initial session if not provided
     if (!initialSession) {
       supabase.auth.getSession().then(({ data: { session } }) => {
@@ -61,36 +64,44 @@ export function AuthProvider({
       setLoading(false)
 
       // Handle specific auth events
-      switch (event) {
-        case 'SIGNED_IN':
-          router.refresh()
-          break
-        case 'SIGNED_OUT':
-          router.push('/auth/sign-in')
-          break
-        case 'TOKEN_REFRESHED':
-          console.log('Token refreshed successfully')
-          break
-        case 'USER_UPDATED':
-          router.refresh()
-          break
+      if (event === 'SIGNED_IN') {
+        router.refresh()
+      } else if (event === 'SIGNED_OUT') {
+        router.push('/')
+        router.refresh()
+      } else if (event === 'TOKEN_REFRESHED') {
+        console.log('Token refreshed successfully')
+      } else if (event === 'USER_UPDATED') {
+        // Refresh the page to get updated user data
+        router.refresh()
       }
     })
 
     return () => {
       subscription.unsubscribe()
     }
-  }, [supabase, router, initialSession])
+  }, [router, initialSession, supabase])
 
   const signOut = async () => {
-    try {
-      setLoading(true)
-      const { error } = await supabase.auth.signOut()
-      if (error) throw error
-    } catch (error) {
-      console.error('Sign out error:', error)
-    } finally {
-      setLoading(false)
+    if (!supabase) return
+    
+    setLoading(true)
+    const { error } = await supabase.auth.signOut()
+    if (error) {
+      console.error('Error signing out:', error)
+    }
+    setLoading(false)
+  }
+
+  const refreshSession = async () => {
+    if (!supabase) return
+    
+    const { data: { session }, error } = await supabase.auth.refreshSession()
+    if (error) {
+      console.error('Error refreshing session:', error)
+    } else if (session) {
+      setSession(session)
+      setUser(session.user)
     }
   }
 
@@ -99,6 +110,7 @@ export function AuthProvider({
     session,
     loading,
     signOut,
+    refreshSession,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

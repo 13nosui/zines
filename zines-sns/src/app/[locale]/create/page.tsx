@@ -1,4 +1,4 @@
-import { serverAuthGuard } from '@/lib/auth/guards'
+import { serverAuthGuard } from '@/lib/auth/server-guards'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {

@@ -20,12 +20,19 @@ export function FABNavigation({ items }: FABNavigationProps) {
   const [isOpen, setIsOpen] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
+  
+  // Get current locale from pathname
+  const currentLocale = pathname.split('/')[1]
 
   const handleItemClick = (item: FABItem) => {
     if (item.onClick) {
       item.onClick()
     } else if (item.path) {
-      router.push(item.path)
+      // Prepend locale to path if not already present
+      const localizedPath = item.path.startsWith('/') 
+        ? `/${currentLocale}${item.path}`
+        : `/${currentLocale}/${item.path}`
+      router.push(localizedPath)
     }
     setIsOpen(false)
   }

@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   
   const postsWithLikes = await Promise.all(
-    (data || []).map(async (post) => {
+    (data || []).map(async (post: any) => {
       const { count } = await supabase
         .from('likes')
         .select('*', { count: 'exact', head: true })
@@ -46,8 +46,7 @@ export async function GET(request: NextRequest) {
         const { data: likeData } = await supabase
           .from('likes')
           .select('id')
-          .eq('post_id', post.id)
-          .eq('user_id', user.id)
+          .match({ post_id: post.id, user_id: user.id })
           .single()
         
         isLiked = !!likeData

@@ -1,0 +1,54 @@
+{
+  "common": {
+    "appName": "ZINEs",
+    "loading": "Loading...",
+    "error": "Error",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "settings": "Settings"
+  },
+  "auth": {
+    "login": "Log in",
+    "logout": "Log out",
+    "signup": "Sign up",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot password?"
+  },
+  "settings": {
+    "title": "Settings",
+    "theme": "Theme",
+    "language": "Language",
+    "profile": "Profile",
+    "account": "Account",
+    "themes": {
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "languages": {
+      "en": "English",
+      "ja": "Japanese",
+      "es": "Spanish",
+      "fr": "French",
+      "de": "German",
+      "zh": "Chinese",
+      "ko": "Korean"
+    }
+  },
+  "zine": {
+    "create": "Create ZINE",
+    "edit": "Edit ZINE",
+    "delete": "Delete ZINE",
+    "publish": "Publish",
+    "draft": "Draft",
+    "title": "Title",
+    "description": "Description",
+    "tags": "Tags",
+    "noZines": "No ZINEs yet"
+  }
+}

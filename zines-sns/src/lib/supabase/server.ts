@@ -2,19 +2,13 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { Database } from '@/types/database'
 import { cache } from 'react'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 
 // Create a cached version of the server client to prevent multiple instances
 export const createServerClient = cache(() => {
   const cookieStore = cookies()
   return createServerComponentClient<Database>({ 
-    cookies: () => cookieStore,
-    options: {
-      auth: {
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: true
-      }
-    }
+    cookies: () => cookieStore
   })
 })
 
@@ -22,14 +16,7 @@ export const createServerClient = cache(() => {
 export async function createServerActionClient() {
   const cookieStore = cookies()
   return createServerComponentClient<Database>({ 
-    cookies: () => cookieStore,
-    options: {
-      auth: {
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: true
-      }
-    }
+    cookies: () => cookieStore
   })
 }
 
@@ -42,8 +29,7 @@ export function createServiceRoleClient() {
     throw new Error('Missing Supabase environment variables')
   }
 
-  const { createClient } = require('@supabase/supabase-js')
-  return createClient<Database>(supabaseUrl, supabaseServiceRoleKey, {
+  return createSupabaseClient<Database>(supabaseUrl, supabaseServiceRoleKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false
