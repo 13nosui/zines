@@ -1,23 +1,50 @@
 {
   "common": {
     "appName": "ZINEs",
-    "loading": "Loading...",
+    "loading": "Cargando...",
     "error": "Error",
-    "cancel": "Cancel",
-    "save": "Save",
-    "delete": "Delete",
-    "edit": "Edit",
-    "create": "Create",
-    "search": "Search",
-    "settings": "Settings"
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "search": "Buscar",
+    "settings": "Configuración"
   },
   "auth": {
-    "login": "Log in",
-    "logout": "Log out",
-    "signup": "Sign up",
-    "email": "Email",
-    "password": "Password",
-    "forgotPassword": "Forgot password?"
+    "login": "Iniciar sesión",
+    "logout": "Cerrar sesión",
+    "signup": "Registrarse",
+    "signIn": "Iniciar sesión",
+    "signUp": "Registrarse",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "signInTitle": "Inicia sesión en tu cuenta",
+    "signUpTitle": "Crea una nueva cuenta",
+    "emailPlaceholder": "tu@ejemplo.com",
+    "passwordPlaceholder": "Al menos 8 caracteres",
+    "orContinueWith": "O continuar con",
+    "dontHaveAccount": "¿No tienes una cuenta? ",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta? ",
+    "validation": {
+      "emailRequired": "El correo electrónico es obligatorio",
+      "emailInvalid": "Por favor ingresa un correo electrónico válido",
+      "passwordRequired": "La contraseña es obligatoria",
+      "passwordMinLength": "La contraseña debe tener al menos {min} caracteres"
+    },
+    "messages": {
+      "checkEmail": "¡Revisa tu correo para confirmar tu cuenta!"
+    },
+    "errors": {
+      "unexpected": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.",
+      "invalidCredentials": "Correo electrónico o contraseña inválidos. Por favor, inténtalo de nuevo.",
+      "userAlreadyExists": "Ya existe una cuenta con este correo electrónico.",
+      "emailNotConfirmed": "Por favor revisa tu correo para confirmar tu cuenta.",
+      "userNotFound": "No se encontró ninguna cuenta con este correo electrónico.",
+      "sessionExpired": "Tu sesión ha expirado. Por favor, inicia sesión de nuevo.",
+      "oauthError": "Hubo un error al iniciar sesión con este proveedor. Por favor, inténtalo de nuevo."
+    }
   },
   "settings": {
     "title": "Settings",
