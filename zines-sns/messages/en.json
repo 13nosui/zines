@@ -65,6 +65,20 @@
       "de": "German",
       "zh": "Chinese",
       "ko": "Korean"
+    },
+    "profileSettings": {
+      "title": "Profile Settings",
+      "username": "Username",
+      "usernamePlaceholder": "Enter your username",
+      "avatar": "Avatar",
+      "changeAvatar": "Change Avatar",
+      "removeAvatar": "Remove Avatar",
+      "uploadingAvatar": "Uploading avatar...",
+      "updating": "Updating profile...",
+      "updateSuccess": "Profile updated successfully",
+      "updateError": "Failed to update profile",
+      "invalidUsername": "Username must be at least 3 characters",
+      "usernameExists": "This username is already taken"
     }
   },
   "zine": {

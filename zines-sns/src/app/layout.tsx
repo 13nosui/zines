@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { Providers } from '@/components/providers/Providers'
 import { AuthProviderWrapper } from '@/components/providers/AuthProviderWrapper'
+import { Toaster } from 'sonner'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -29,6 +30,7 @@ export default function RootLayout({
         <Providers>
           <AuthProviderWrapper>
             {children}
+            <Toaster richColors position="top-center" />
           </AuthProviderWrapper>
         </Providers>
       </body>
