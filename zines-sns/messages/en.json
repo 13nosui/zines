@@ -85,7 +85,10 @@
       "updateSuccess": "Profile updated successfully",
       "updateError": "Failed to update profile",
       "invalidUsername": "Username must be at least 3 characters",
-      "usernameExists": "This username is already taken"
+      "usernameExists": "This username is already taken",
+      "avatarGuideline1": "Recommended size: 400x400 pixels or larger",
+      "avatarGuideline2": "Maximum file size: 5MB",
+      "avatarGuideline3": "Supported formats: JPG, PNG, GIF, WebP"
     }
   },
   "zine": {
@@ -112,6 +115,8 @@
     "emailChangeHint": "You'll need to confirm your new email address",
     "emailSameError": "This is already your current email",
     "emailUpdateSuccess": "Email update request sent. Please check your inbox.",
+    "emailAlreadyExists": "This email is already registered to another account",
+    "emailVerificationInfo": "You will receive a confirmation email at your new address. Please click the link in the email to complete the change.",
     "colorModeSystemDescription": "Automatically switch based on your device settings",
     "colorModeLightDescription": "Always use light mode",
     "colorModeDarkDescription": "Always use dark mode",
