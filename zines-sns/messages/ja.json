@@ -14,10 +14,37 @@
   "auth": {
     "login": "ログイン",
     "logout": "ログアウト",
-    "signup": "新規登録",
+    "signup": "サインアップ",
+    "signIn": "ログイン",
+    "signUp": "サインアップ",
     "email": "メールアドレス",
     "password": "パスワード",
-    "forgotPassword": "パスワードを忘れた方"
+    "forgotPassword": "パスワードを忘れましたか？",
+    "signInTitle": "アカウントにログイン",
+    "signUpTitle": "新しいアカウントを作成",
+    "emailPlaceholder": "you@example.com",
+    "passwordPlaceholder": "8文字以上",
+    "orContinueWith": "または続行",
+    "dontHaveAccount": "アカウントをお持ちでないですか？ ",
+    "alreadyHaveAccount": "すでにアカウントをお持ちですか？ ",
+    "validation": {
+      "emailRequired": "メールアドレスは必須です",
+      "emailInvalid": "有効なメールアドレスを入力してください",
+      "passwordRequired": "パスワードは必須です",
+      "passwordMinLength": "パスワードは{min}文字以上である必要があります"
+    },
+    "messages": {
+      "checkEmail": "アカウントを確認するためにメールをチェックしてください！"
+    },
+    "errors": {
+      "unexpected": "予期しないエラーが発生しました。もう一度お試しください。",
+      "invalidCredentials": "メールアドレスまたはパスワードが無効です。もう一度お試しください。",
+      "userAlreadyExists": "このメールアドレスのアカウントは既に存在します。",
+      "emailNotConfirmed": "アカウントを確認するためにメールをチェックしてください。",
+      "userNotFound": "このメールアドレスのアカウントが見つかりません。",
+      "sessionExpired": "セッションの有効期限が切れました。もう一度ログインしてください。",
+      "oauthError": "このプロバイダーでのログインでエラーが発生しました。もう一度お試しください。"
+    }
   },
   "settings": {
     "title": "設定",

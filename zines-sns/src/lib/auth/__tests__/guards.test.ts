@@ -1,7 +1,8 @@
-import { serverAuthGuard, useClientAuthGuard } from '../guards'
+import { serverAuthGuard } from '../server-guards'
+import { useClientAuthGuard } from '../client-guards'
 import { redirect } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
-import { createBrowserClient } from '@/lib/supabase/client'
+import { createClient } from '@/lib/supabase/client'
 
 // Mock Next.js navigation
 jest.mock('next/navigation', () => ({
@@ -14,7 +15,7 @@ jest.mock('@/lib/supabase/server', () => ({
 }))
 
 jest.mock('@/lib/supabase/client', () => ({
-  createBrowserClient: jest.fn()
+  createClient: jest.fn()
 }))
 
 describe('AuthGuard', () => {
@@ -123,7 +124,7 @@ describe('AuthGuard', () => {
           getSession: jest.fn()
         }
       }
-      ;(createBrowserClient as jest.Mock).mockReturnValue(mockSupabase)
+      ;(createClient as jest.Mock).mockReturnValue(mockSupabase)
     })
 
     describe('checkAuth', () => {

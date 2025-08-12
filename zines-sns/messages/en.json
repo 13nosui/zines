@@ -15,9 +15,36 @@
     "login": "Log in",
     "logout": "Log out",
     "signup": "Sign up",
-    "email": "Email",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "email": "Email address",
     "password": "Password",
-    "forgotPassword": "Forgot password?"
+    "forgotPassword": "Forgot your password?",
+    "signInTitle": "Sign in to your account",
+    "signUpTitle": "Create a new account",
+    "emailPlaceholder": "you@example.com",
+    "passwordPlaceholder": "At least 8 characters",
+    "orContinueWith": "Or continue with",
+    "dontHaveAccount": "Don't have an account? ",
+    "alreadyHaveAccount": "Already have an account? ",
+    "validation": {
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email address",
+      "passwordRequired": "Password is required",
+      "passwordMinLength": "Password must be at least {min} characters"
+    },
+    "messages": {
+      "checkEmail": "Check your email to confirm your account!"
+    },
+    "errors": {
+      "unexpected": "An unexpected error occurred. Please try again.",
+      "invalidCredentials": "Invalid email or password. Please try again.",
+      "userAlreadyExists": "An account with this email already exists.",
+      "emailNotConfirmed": "Please check your email to confirm your account.",
+      "userNotFound": "No account found with this email address.",
+      "sessionExpired": "Your session has expired. Please sign in again.",
+      "oauthError": "There was an error signing in with this provider. Please try again."
+    }
   },
   "settings": {
     "title": "Settings",
