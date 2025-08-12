@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { signInWithEmail, signUpWithEmail, signInWithOAuth } from '@/lib/auth/utils'
+import { signInWithEmail, signUpWithEmail, signInWithOAuth } from '@/lib/auth/client-utils'
 import Link from 'next/link'
 
 interface AuthFormProps {

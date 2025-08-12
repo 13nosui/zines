@@ -1,21 +1,40 @@
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import createMiddleware from 'next-intl/middleware'
+import { locales, defaultLocale } from './i18n'
+
+// Create the intl middleware
+const intlMiddleware = createMiddleware({
+  locales,
+  defaultLocale,
+  localePrefix: 'always',
+  localeDetection: true
+})
 
 export async function middleware(req: NextRequest) {
+  // First handle i18n routing
+  const pathname = req.nextUrl.pathname
+  const pathnameIsMissingLocale = locales.every(
+    (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
+  )
+
+  // Redirect if there is no locale
+  if (pathnameIsMissingLocale) {
+    const locale = req.headers.get('accept-language')?.split(',')[0]?.split('-')[0] || defaultLocale
+    const validLocale = locales.includes(locale as any) ? locale : defaultLocale
+    
+    return NextResponse.redirect(
+      new URL(`/${validLocale}${pathname.startsWith('/') ? '' : '/'}${pathname}`, req.url)
+    )
+  }
+
   const res = NextResponse.next()
   
-  // Create Supabase client with enhanced options
+  // Create Supabase client
   const supabase = createMiddlewareClient({ 
     req, 
-    res,
-    options: {
-      auth: {
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: true
-      }
-    }
+    res
   })
   
   // Get session and refresh if needed
@@ -34,29 +53,34 @@ export async function middleware(req: NextRequest) {
     await supabase.auth.refreshSession()
   }
 
+  // Extract the locale from the pathname
+  const pathParts = pathname.split('/')
+  const locale = pathParts[1]
+  const pathWithoutLocale = '/' + pathParts.slice(2).join('/')
+
   // Auth routes should be accessible without authentication
-  const isAuthRoute = req.nextUrl.pathname.startsWith('/auth/')
-  const isPublicRoute = req.nextUrl.pathname === '/' || 
-                       req.nextUrl.pathname.startsWith('/public/')
+  const isAuthRoute = pathWithoutLocale.startsWith('/auth/')
+  const isPublicRoute = pathWithoutLocale === '/' || 
+                       pathWithoutLocale.startsWith('/public/')
   
   // Protected routes that require authentication
-  const isProtectedRoute = req.nextUrl.pathname === '/create' || 
-                          req.nextUrl.pathname === '/me' ||
-                          req.nextUrl.pathname.startsWith('/create/') ||
-                          req.nextUrl.pathname.startsWith('/me/')
+  const isProtectedRoute = pathWithoutLocale === '/create' || 
+                          pathWithoutLocale === '/me' ||
+                          pathWithoutLocale.startsWith('/create/') ||
+                          pathWithoutLocale.startsWith('/me/')
   
   // If user is not authenticated and trying to access protected routes
   if (!session && (isProtectedRoute || (!isAuthRoute && !isPublicRoute))) {
     const redirectUrl = req.nextUrl.clone()
-    redirectUrl.pathname = '/auth/sign-in'
+    redirectUrl.pathname = `/${locale}/auth/sign-in`
     // Use returnTo parameter as requested
-    redirectUrl.searchParams.set('returnTo', req.nextUrl.pathname)
+    redirectUrl.searchParams.set('returnTo', pathname)
     return NextResponse.redirect(redirectUrl)
   }
   
   // If user is authenticated and trying to access auth routes, redirect to home or returnTo
-  if (session && isAuthRoute && !req.nextUrl.pathname.includes('/callback')) {
-    const returnTo = req.nextUrl.searchParams.get('returnTo') || '/'
+  if (session && isAuthRoute && !pathWithoutLocale.includes('/callback')) {
+    const returnTo = req.nextUrl.searchParams.get('returnTo') || `/${locale}`
     return NextResponse.redirect(new URL(returnTo, req.url))
   }
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { resetPassword } from '@/lib/auth/utils'
+import { resetPassword } from '@/lib/auth/client-utils'
 import Link from 'next/link'
 
 export default function ForgotPasswordPage() {

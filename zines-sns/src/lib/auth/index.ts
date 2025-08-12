@@ -1,3 +1,21 @@
 export * from './actions'
-export * from './utils'
-export * from './guards'
+
+// Client utilities
+export {
+  signInWithEmail,
+  signUpWithEmail,
+  signInWithOAuth,
+  signOut,
+  resetPassword,
+  updatePassword,
+} from './client-utils'
+
+// Server utilities  
+export {
+  getSession,
+  getUser,
+} from './server-utils'
+
+// Guards
+export { useClientAuthGuard } from './client-guards'
+export { serverAuthGuard } from './server-guards'

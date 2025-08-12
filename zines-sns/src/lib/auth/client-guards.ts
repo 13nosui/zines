@@ -1,45 +1,23 @@
-import { redirect } from 'next/navigation'
-import { createServerClient } from '@/lib/supabase/server'
-import { createBrowserClient } from '@/lib/supabase/client'
+'use client'
 
-/**
- * Server-side auth guard for protecting routes in server components
- * @param options Configuration options for the guard
- * @returns The authenticated session or redirects if not authenticated
- */
-export async function serverAuthGuard(options?: {
-  redirectTo?: string
-  returnTo?: string
-}) {
-  const supabase = createServerClient()
-  const { data: { session }, error } = await supabase.auth.getSession()
-
-  if (error || !session) {
-    const redirectTo = options?.redirectTo || '/auth/sign-in'
-    const returnTo = options?.returnTo || null
-    
-    const url = new URL(redirectTo, process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000')
-    if (returnTo) {
-      url.searchParams.set('returnTo', returnTo)
-    }
-    
-    redirect(url.toString())
-  }
-
-  return session
-}
+import { createClient } from '@/lib/supabase/client'
 
 /**
  * Client-side auth guard hook for protecting routes in client components
  * @returns Auth state and helper functions
  */
 export function useClientAuthGuard() {
-  const supabase = createBrowserClient()
+  const supabase = createClient()
   
   const checkAuth = async (options?: {
     redirectTo?: string
     returnTo?: string
   }) => {
+    if (!supabase) {
+      console.error('Supabase client not initialized')
+      return null
+    }
+    
     const { data: { session }, error } = await supabase.auth.getSession()
     
     if (error || !session) {
@@ -59,11 +37,13 @@ export function useClientAuthGuard() {
   }
   
   const isAuthenticated = async () => {
+    if (!supabase) return false
     const { data: { session } } = await supabase.auth.getSession()
     return !!session
   }
   
   const redirectIfAuthenticated = async (redirectTo: string = '/') => {
+    if (!supabase) return
     const { data: { session } } = await supabase.auth.getSession()
     
     if (session) {

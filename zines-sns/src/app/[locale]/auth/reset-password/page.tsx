@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { updatePassword } from '@/lib/auth/utils'
+import { updatePassword } from '@/lib/auth/client-utils'
 import { useRouter } from 'next/navigation'
 
 export default function ResetPasswordPage() {
