@@ -21,7 +21,7 @@ export default function SettingsPage() {
   const { theme, setTheme } = useTheme()
   const router = useRouter()
   const pathname = usePathname()
-  const { user } = useAuth()
+  const { user, signOut } = useAuth()
   const [mounted, setMounted] = useState(false)
   const [profile, setProfile] = useState<any>(null)
   const [username, setUsername] = useState('')
@@ -174,6 +174,18 @@ export default function SettingsPage() {
     setIsUploadingAvatar(false)
   }
 
+  const handleSignOut = async () => {
+    try {
+      await signOut()
+      // The AuthProvider will handle the redirect to '/' and refresh
+      // But we'll also redirect to /auth/sign-in as requested
+      router.push(`/${currentLocale}/auth/sign-in`)
+    } catch (error) {
+      console.error('Error signing out:', error)
+      toast.error(t('auth.errors.unexpected'))
+    }
+  }
+
   if (!mounted) {
     return null
   }
@@ -282,6 +294,27 @@ export default function SettingsPage() {
               </SelectItem>
             ))}
           </Select>
+        </CardBody>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <h2 className="text-lg font-semibold">{t('settings.account')}</h2>
+        </CardHeader>
+        <CardBody>
+          <Button
+            color="danger"
+            variant="flat"
+            onPress={handleSignOut}
+            className="w-full"
+            startContent={
+              <span className="material-symbols-rounded">
+                logout
+              </span>
+            }
+          >
+            {t('auth.logout')}
+          </Button>
         </CardBody>
       </Card>
     </div>
