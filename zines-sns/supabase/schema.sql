@@ -117,10 +117,40 @@ CREATE TRIGGER update_posts_updated_at BEFORE UPDATE ON posts
 -- Create function to handle new user creation
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
+DECLARE
+  username_value TEXT;
+  default_avatar_url TEXT;
 BEGIN
-  INSERT INTO public.profiles (id, username)
-  VALUES (new.id, new.email);
-  RETURN new;
+  -- Extract username from email (part before @)
+  username_value := SPLIT_PART(NEW.email, '@', 1);
+  
+  -- Set default avatar URL (you can change this to your preferred default avatar)
+  default_avatar_url := 'https://api.dicebear.com/7.x/avataaars/svg?seed=' || NEW.id;
+  
+  -- Insert into profiles table
+  INSERT INTO public.profiles (id, username, avatar_url, created_at)
+  VALUES (
+    NEW.id,
+    username_value,
+    default_avatar_url,
+    NOW()
+  );
+  
+  RETURN NEW;
+EXCEPTION
+  WHEN unique_violation THEN
+    -- If username already exists, append a random suffix
+    username_value := username_value || '_' || substr(md5(random()::text), 1, 6);
+    
+    INSERT INTO public.profiles (id, username, avatar_url, created_at)
+    VALUES (
+      NEW.id,
+      username_value,
+      default_avatar_url,
+      NOW()
+    );
+    
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
