@@ -3,13 +3,17 @@
 import { Button } from '@heroui/button'
 import { Input } from '@heroui/input'
 import { Card, CardBody } from '@heroui/card'
+import { Alert } from '@heroui/alert'
+import { Skeleton } from '@heroui/skeleton'
+import { Spinner } from '@heroui/spinner'
 import { useRouter, usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useState, useEffect } from 'react'
-import { useAuth } from '@/components/providers/AuthProvider'
-import { getProfile, updateProfile, checkUsernameAvailability } from '@/lib/services/profile'
+import { useProfile } from '@/hooks/useProfile'
+import { checkUsernameAvailability } from '@/lib/services/profile'
 import { useDebounce } from '@/hooks/useDebounce'
 import { toast } from 'sonner'
+import { Spinner } from '@heroui/spinner'
 
 // Username validation regex: alphanumeric, underscore, dash
 const USERNAME_REGEX = /^[a-zA-Z0-9_-]+$/
@@ -21,38 +25,21 @@ export default function UsernameEditPage() {
   const router = useRouter()
   const pathname = usePathname()
   const currentLocale = pathname.split('/')[1]
-  const { user } = useAuth()
-  const [profile, setProfile] = useState<any>(null)
+  const { profile, loading, error, updateProfile, isUpdating } = useProfile()
   const [username, setUsername] = useState('')
   const [originalUsername, setOriginalUsername] = useState('')
-  const [isLoading, setIsLoading] = useState(true)
-  const [isSaving, setIsSaving] = useState(false)
   const [usernameError, setUsernameError] = useState('')
+  const [isCheckingAvailability, setIsCheckingAvailability] = useState(false)
   
   // Debounce username for availability check
   const debouncedUsername = useDebounce(username, 500)
   
   useEffect(() => {
-    const loadProfile = async () => {
-      if (!user) return
-      
-      setIsLoading(true)
-      const { data, error } = await getProfile(user.id)
-      
-      if (error) {
-        console.error('Error loading profile:', error)
-        toast.error(t('settings.profileSettings.updateError'))
-      } else if (data) {
-        setProfile(data)
-        setUsername(data.username || '')
-        setOriginalUsername(data.username || '')
-      }
-      
-      setIsLoading(false)
+    if (profile) {
+      setUsername(profile.username || '')
+      setOriginalUsername(profile.username || '')
     }
-    
-    loadProfile()
-  }, [user, t])
+  }, [profile])
   
   // Validate username format
   const validateUsername = (value: string): string => {
@@ -78,8 +65,9 @@ export default function UsernameEditPage() {
   // Check username availability
   useEffect(() => {
     const checkUsername = async () => {
-      if (!user || !debouncedUsername || debouncedUsername === originalUsername) {
+      if (!profile || !debouncedUsername || debouncedUsername === originalUsername) {
         setUsernameError('')
+        setIsCheckingAvailability(false)
         return
       }
       
@@ -87,22 +75,27 @@ export default function UsernameEditPage() {
       const formatError = validateUsername(debouncedUsername)
       if (formatError) {
         setUsernameError(formatError)
+        setIsCheckingAvailability(false)
         return
       }
       
-      const { available, error } = await checkUsernameAvailability(debouncedUsername, user.id)
+      setIsCheckingAvailability(true)
+      const { available, error } = await checkUsernameAvailability(debouncedUsername, profile.id)
       
       if (error) {
         console.error('Error checking username:', error)
+        setUsernameError(t('common.error'))
       } else if (!available) {
         setUsernameError(t('settings.profileSettings.usernameExists'))
       } else {
         setUsernameError('')
       }
+      
+      setIsCheckingAvailability(false)
     }
     
     checkUsername()
-  }, [debouncedUsername, user, originalUsername, t])
+  }, [debouncedUsername, profile, originalUsername, t])
   
   const handleUsernameChange = (value: string) => {
     // Only allow valid characters and enforce max length
@@ -112,23 +105,21 @@ export default function UsernameEditPage() {
   }
   
   const handleSave = async () => {
-    if (!user || usernameError || username === originalUsername) return
+    if (!profile || usernameError || username === originalUsername) return
     
-    setIsSaving(true)
-    
-    const { data, error } = await updateProfile(user.id, { username })
+    const { data, error } = await updateProfile(
+      { username },
+      { optimistic: true }
+    )
     
     if (error) {
       console.error('Error updating profile:', error)
       toast.error(t('settings.profileSettings.updateError'))
     } else if (data) {
-      setProfile(data)
       setOriginalUsername(username)
       toast.success(t('settings.profileSettings.updateSuccess'))
       router.push(`/${currentLocale}/me`)
     }
-    
-    setIsSaving(false)
   }
   
   const handleBack = () => {
@@ -136,6 +127,51 @@ export default function UsernameEditPage() {
   }
   
   const isValid = username.length >= MIN_USERNAME_LENGTH && !usernameError && username !== originalUsername
+  
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="max-w-[480px] mx-auto">
+          <div className="flex items-center gap-3 p-4 bg-content1 border-b">
+            <Skeleton className="w-10 h-10 rounded-medium" />
+            <Skeleton className="h-6 w-32" />
+          </div>
+          <div className="p-4">
+            <Card className="bg-content1">
+              <CardBody className="p-4">
+                <Skeleton className="h-14 w-full rounded-medium" />
+              </CardBody>
+            </Card>
+          </div>
+        </div>
+      </div>
+    )
+  }
+  
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="max-w-[480px] mx-auto">
+          <div className="flex items-center gap-3 p-4 bg-content1 border-b">
+            <Button
+              isIconOnly
+              variant="light"
+              onPress={handleBack}
+              className="material-symbols-rounded"
+            >
+              arrow_back
+            </Button>
+            <h1 className="text-lg font-semibold flex-1">{t('settings.profileSettings.username')}</h1>
+          </div>
+          <div className="p-4">
+            <Alert color="danger" description={error.message} />
+          </div>
+        </div>
+      </div>
+    )
+  }
   
   return (
     <div className="min-h-screen bg-background">
@@ -154,8 +190,8 @@ export default function UsernameEditPage() {
           <Button
             color="primary"
             onPress={handleSave}
-            isLoading={isSaving}
-            isDisabled={!isValid}
+            isLoading={isUpdating}
+            isDisabled={!isValid || isCheckingAvailability}
           >
             {t('common.save')}
           </Button>
@@ -172,7 +208,7 @@ export default function UsernameEditPage() {
                 onValueChange={handleUsernameChange}
                 isInvalid={!!usernameError}
                 errorMessage={usernameError}
-                isDisabled={isLoading || isSaving}
+                isDisabled={isUpdating}
                 maxLength={MAX_USERNAME_LENGTH}
                 startContent={
                   <span className="material-symbols-rounded text-default-400">
@@ -180,9 +216,14 @@ export default function UsernameEditPage() {
                   </span>
                 }
                 endContent={
-                  <span className="text-xs text-default-400">
-                    {username.length}/{MAX_USERNAME_LENGTH}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {isCheckingAvailability && (
+                      <Spinner size="sm" />
+                    )}
+                    <span className="text-xs text-default-400">
+                      {username.length}/{MAX_USERNAME_LENGTH}
+                    </span>
+                  </div>
                 }
                 classNames={{
                   inputWrapper: "h-14"
