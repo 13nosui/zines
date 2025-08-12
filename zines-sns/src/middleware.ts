@@ -1,4 +1,4 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import createMiddleware from 'next-intl/middleware'
@@ -29,28 +29,50 @@ export async function middleware(req: NextRequest) {
     )
   }
 
-  const res = NextResponse.next()
-  
-  // Create Supabase client
-  const supabase = createMiddlewareClient({ 
-    req, 
-    res
+  // Create a response object that we'll modify
+  let response = NextResponse.next({
+    request: {
+      headers: req.headers,
+    },
   })
-  
-  // Get session and refresh if needed
-  const {
-    data: { session },
-    error
-  } = await supabase.auth.getSession()
+
+  // Create Supabase client with modern SSR approach
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return req.cookies.get(name)?.value
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          req.cookies.set({ name, value, ...options })
+          response = NextResponse.next({
+            request: {
+              headers: req.headers,
+            },
+          })
+          response.cookies.set({ name, value, ...options })
+        },
+        remove(name: string, options: CookieOptions) {
+          req.cookies.delete(name)
+          response = NextResponse.next({
+            request: {
+              headers: req.headers,
+            },
+          })
+          response.cookies.delete(name)
+        },
+      },
+    }
+  )
+
+  // Get session
+  const { data: { session }, error } = await supabase.auth.getSession()
 
   // Handle auth errors
   if (error) {
     console.error('Middleware auth error:', error)
-  }
-
-  // Refresh session if it exists to keep it alive
-  if (session) {
-    await supabase.auth.refreshSession()
   }
 
   // Extract the locale from the pathname
@@ -70,7 +92,7 @@ export async function middleware(req: NextRequest) {
                           pathWithoutLocale.startsWith('/me/')
   
   // If user is not authenticated and trying to access protected routes
-  if (!session && (isProtectedRoute || (!isAuthRoute && !isPublicRoute))) {
+  if (!session && isProtectedRoute) {
     const redirectUrl = req.nextUrl.clone()
     redirectUrl.pathname = `/${locale}/auth/sign-in`
     // Use returnTo parameter as requested
@@ -84,16 +106,15 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL(returnTo, req.url))
   }
 
-  // Set secure cookie options for session
+  // Set secure headers for authenticated sessions
   if (session) {
-    // Set custom headers for enhanced security
-    res.headers.set('X-Frame-Options', 'DENY')
-    res.headers.set('X-Content-Type-Options', 'nosniff')
-    res.headers.set('X-XSS-Protection', '1; mode=block')
-    res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+    response.headers.set('X-Frame-Options', 'DENY')
+    response.headers.set('X-Content-Type-Options', 'nosniff')
+    response.headers.set('X-XSS-Protection', '1; mode=block')
+    response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
   }
   
-  return res
+  return response
 }
 
 export const config = {

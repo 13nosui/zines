@@ -15,6 +15,7 @@
     "@heroui/react": "^2.2.9",
     "@heroui/theme": "^2.1.17",
     "@supabase/auth-helpers-nextjs": "^0.8.7",
+    "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.39.1",
     "date-fns": "^3.0.6",
     "framer-motion": "^10.16.16",
