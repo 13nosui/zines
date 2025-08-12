@@ -39,18 +39,25 @@ export async function middleware(req: NextRequest) {
   const isPublicRoute = req.nextUrl.pathname === '/' || 
                        req.nextUrl.pathname.startsWith('/public/')
   
+  // Protected routes that require authentication
+  const isProtectedRoute = req.nextUrl.pathname === '/create' || 
+                          req.nextUrl.pathname === '/me' ||
+                          req.nextUrl.pathname.startsWith('/create/') ||
+                          req.nextUrl.pathname.startsWith('/me/')
+  
   // If user is not authenticated and trying to access protected routes
-  if (!session && !isAuthRoute && !isPublicRoute) {
+  if (!session && (isProtectedRoute || (!isAuthRoute && !isPublicRoute))) {
     const redirectUrl = req.nextUrl.clone()
     redirectUrl.pathname = '/auth/sign-in'
-    redirectUrl.searchParams.set('redirectTo', req.nextUrl.pathname)
+    // Use returnTo parameter as requested
+    redirectUrl.searchParams.set('returnTo', req.nextUrl.pathname)
     return NextResponse.redirect(redirectUrl)
   }
   
-  // If user is authenticated and trying to access auth routes, redirect to home
+  // If user is authenticated and trying to access auth routes, redirect to home or returnTo
   if (session && isAuthRoute && !req.nextUrl.pathname.includes('/callback')) {
-    const redirectTo = req.nextUrl.searchParams.get('redirectTo') || '/'
-    return NextResponse.redirect(new URL(redirectTo, req.url))
+    const returnTo = req.nextUrl.searchParams.get('returnTo') || '/'
+    return NextResponse.redirect(new URL(returnTo, req.url))
   }
 
   // Set secure cookie options for session
