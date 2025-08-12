@@ -9,7 +9,8 @@
     "edit": "Edit",
     "create": "Create",
     "search": "Search",
-    "settings": "Settings"
+    "settings": "Settings",
+    "profile": "Profile"
   },
   "auth": {
     "login": "Log in",
@@ -70,6 +71,7 @@
       "title": "Profile Settings",
       "username": "Username",
       "usernamePlaceholder": "Enter your username",
+      "usernameHint": "Username must be at least {min} characters",
       "avatar": "Avatar",
       "changeAvatar": "Change Avatar",
       "removeAvatar": "Remove Avatar",
@@ -91,5 +93,46 @@
     "description": "Description",
     "tags": "Tags",
     "noZines": "No ZINEs yet"
+  },
+  "profile": {
+    "noUsername": "Not set",
+    "likes": "Likes",
+    "following": "Following",
+    "followers": "Followers",
+    "colorMode": "Color Mode",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "currentEmail": "Current Email",
+    "newEmail": "New Email",
+    "emailChangeHint": "You'll need to confirm your new email address",
+    "emailSameError": "This is already your current email",
+    "emailUpdateSuccess": "Email update request sent. Please check your inbox.",
+    "colorModeSystemDescription": "Automatically switch based on your device settings",
+    "colorModeLightDescription": "Always use light mode",
+    "colorModeDarkDescription": "Always use dark mode",
+    "logoutConfirmTitle": "Are you sure you want to log out?",
+    "logoutConfirmDescription": "You'll need to sign in again to access your account.",
+    "noLikesYet": "You haven't liked any posts yet",
+    "notFollowingAnyone": "You're not following anyone yet",
+    "noFollowersYet": "You don't have any followers yet"
+  },
+  "legal": {
+    "privacyTitle": "Privacy Policy",
+    "privacyIntro": "This privacy policy describes how we collect, use, and protect your personal information.",
+    "dataCollection": "Information We Collect",
+    "dataCollectionText": "We collect information you provide directly to us, such as when you create an account, update your profile, or interact with other users.",
+    "dataUsage": "How We Use Your Information",
+    "dataUsageText": "We use the information we collect to provide, maintain, and improve our services, communicate with you, and ensure a safe user experience.",
+    "dataProtection": "Data Security",
+    "dataProtectionText": "We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction.",
+    "termsTitle": "Terms of Service",
+    "termsIntro": "By using our service, you agree to be bound by these terms. Please read them carefully.",
+    "acceptableUse": "Acceptable Use",
+    "acceptableUseText": "You agree to use our service only for lawful purposes and in accordance with these terms. You must not use our service in any way that could damage, disable, or impair it.",
+    "userContent": "User Content",
+    "userContentText": "You retain ownership of any content you submit, but grant us a license to use, modify, and distribute it as part of our service.",
+    "liability": "Limitation of Liability",
+    "liabilityText": "To the maximum extent permitted by law, we shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of our service.",
+    "lastUpdated": "Last updated"
   }
 }
