@@ -20,6 +20,11 @@ const USERNAME_REGEX = /^[a-zA-Z0-9_-]+$/
 const MAX_USERNAME_LENGTH = 24
 const MIN_USERNAME_LENGTH = 3
 
+// Username validation regex: alphanumeric, underscore, dash
+const USERNAME_REGEX = /^[a-zA-Z0-9_-]+$/
+const MAX_USERNAME_LENGTH = 24
+const MIN_USERNAME_LENGTH = 3
+
 export default function UsernameEditPage() {
   const t = useTranslations()
   const router = useRouter()
@@ -40,6 +45,27 @@ export default function UsernameEditPage() {
       setOriginalUsername(profile.username || '')
     }
   }, [profile])
+  
+  // Validate username format
+  const validateUsername = (value: string): string => {
+    if (!value) {
+      return ''
+    }
+    
+    if (value.length < MIN_USERNAME_LENGTH) {
+      return t('settings.profileSettings.usernameTooShort', { min: MIN_USERNAME_LENGTH })
+    }
+    
+    if (value.length > MAX_USERNAME_LENGTH) {
+      return t('settings.profileSettings.usernameTooLong', { max: MAX_USERNAME_LENGTH })
+    }
+    
+    if (!USERNAME_REGEX.test(value)) {
+      return t('settings.profileSettings.usernameInvalidFormat')
+    }
+    
+    return ''
+  }
   
   // Validate username format
   const validateUsername = (value: string): string => {
@@ -96,6 +122,13 @@ export default function UsernameEditPage() {
     
     checkUsername()
   }, [debouncedUsername, profile, originalUsername, t])
+  
+  const handleUsernameChange = (value: string) => {
+    // Only allow valid characters and enforce max length
+    if (value.length <= MAX_USERNAME_LENGTH) {
+      setUsername(value)
+    }
+  }
   
   const handleUsernameChange = (value: string) => {
     // Only allow valid characters and enforce max length
