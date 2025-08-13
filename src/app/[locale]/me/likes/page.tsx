@@ -80,15 +80,15 @@ export default function LikesPage() {
       return []
     }
     
-    return data || []
+    return (data || []) as any[]
   }, [user, supabase, t])
   
   useEffect(() => {
     const loadInitialLikes = async () => {
       setIsLoading(true)
       const data = await fetchLikes(0)
-      setLikes(data)
-      setHasMore(data.length === ITEMS_PER_PAGE)
+      setLikes(data || [])
+      setHasMore((data || []).length === ITEMS_PER_PAGE)
       setIsLoading(false)
     }
     
@@ -101,7 +101,7 @@ export default function LikesPage() {
         const nextPage = page + 1
         const newLikes = await fetchLikes(nextPage)
         
-        if (newLikes.length > 0) {
+        if (newLikes && newLikes.length > 0) {
           setLikes(prev => [...prev, ...newLikes])
           setPage(nextPage)
           setHasMore(newLikes.length === ITEMS_PER_PAGE)

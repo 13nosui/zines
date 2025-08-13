@@ -64,15 +64,15 @@ export default function FollowingPage() {
       return []
     }
     
-    return data || []
+    return (data || []) as any[]
   }, [user, supabase, t])
   
   useEffect(() => {
     const loadInitialFollowing = async () => {
       setIsLoading(true)
       const data = await fetchFollowing(0)
-      setFollowing(data)
-      setHasMore(data.length === ITEMS_PER_PAGE)
+      setFollowing(data || [])
+      setHasMore((data || []).length === ITEMS_PER_PAGE)
       setIsLoading(false)
     }
     
@@ -85,7 +85,7 @@ export default function FollowingPage() {
         const nextPage = page + 1
         const newFollowing = await fetchFollowing(nextPage)
         
-        if (newFollowing.length > 0) {
+        if (newFollowing && newFollowing.length > 0) {
           setFollowing(prev => [...prev, ...newFollowing])
           setPage(nextPage)
           setHasMore(newFollowing.length === ITEMS_PER_PAGE)
