@@ -67,7 +67,7 @@ export default function FollowersPage() {
     
     // Check if current user is following each follower
     if (data && data.length > 0) {
-      const followerIds = data.map(f => f.follower.id)
+      const followerIds = data.map((f: any) => f.follower?.id).filter(Boolean)
       const { data: followingData } = await supabase
         .from('follows')
         .select('following_id')
@@ -76,9 +76,9 @@ export default function FollowersPage() {
       
       const followingSet = new Set(followingData?.map(f => f.following_id) || [])
       
-      return data.map(follower => ({
+      return data.map((follower: any) => ({
         ...follower,
-        isFollowing: followingSet.has(follower.follower.id)
+        isFollowing: followingSet.has(follower.follower?.id)
       }))
     }
     
@@ -89,8 +89,8 @@ export default function FollowersPage() {
     const loadInitialFollowers = async () => {
       setIsLoading(true)
       const data = await fetchFollowers(0)
-      setFollowers(data)
-      setHasMore(data.length === ITEMS_PER_PAGE)
+      setFollowers(data || [])
+      setHasMore((data || []).length === ITEMS_PER_PAGE)
       setIsLoading(false)
     }
     
@@ -103,7 +103,7 @@ export default function FollowersPage() {
         const nextPage = page + 1
         const newFollowers = await fetchFollowers(nextPage)
         
-        if (newFollowers.length > 0) {
+        if (newFollowers && newFollowers.length > 0) {
           setFollowers(prev => [...prev, ...newFollowers])
           setPage(nextPage)
           setHasMore(newFollowers.length === ITEMS_PER_PAGE)

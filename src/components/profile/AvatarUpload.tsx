@@ -55,7 +55,7 @@ export function AvatarUpload({
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>()
   const [isProcessing, setIsProcessing] = useState(false)
 
-  const avatarUrl = getAvatarUrl(currentAvatarUrl)
+  const avatarUrl = getAvatarUrl(currentAvatarUrl || null)
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
