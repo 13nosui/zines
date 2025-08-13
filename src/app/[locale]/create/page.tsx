@@ -1,14 +1,14 @@
-import { serverAuthGuard } from '@/lib/auth/server-guards'
-import { Metadata } from 'next'
+import { serverAuthGuard } from "@/lib/auth/server-guards";
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Create - Protected Route',
-  description: 'Create something new'
-}
+  title: "Create - Protected Route",
+  description: "Create something new",
+};
 
 export default async function CreatePage() {
   // This will automatically redirect to sign-in if not authenticated
-  const session = await serverAuthGuard({ returnTo: '/create' })
+  const session = await serverAuthGuard({ returnTo: "/create" });
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
@@ -17,10 +17,7 @@ export default async function CreatePage() {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
             Create Page
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            This is a protected route. You can only access this page if you're authenticated.
-          </p>
-          
+
           <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-4">
             <h2 className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
               Authenticated User
@@ -39,7 +36,10 @@ export default async function CreatePage() {
             </h2>
             <form className="space-y-4">
               <div>
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label
+                  htmlFor="title"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
                   Title
                 </label>
                 <input
@@ -50,9 +50,12 @@ export default async function CreatePage() {
                   placeholder="Enter a title..."
                 />
               </div>
-              
+
               <div>
-                <label htmlFor="content" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label
+                  htmlFor="content"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
                   Content
                 </label>
                 <textarea
@@ -63,7 +66,7 @@ export default async function CreatePage() {
                   placeholder="Enter your content..."
                 />
               </div>
-              
+
               <button
                 type="submit"
                 className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -75,5 +78,5 @@ export default async function CreatePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
