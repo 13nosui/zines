@@ -1,15 +1,15 @@
 'use client'
 
-import { Avatar } from '@heroui/avatar'
 import { Button } from '@heroui/button'
 import { Card, CardBody } from '@heroui/card'
+import { Alert } from '@heroui/alert'
+import { Skeleton } from '@heroui/skeleton'
 import { useRouter, usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { useState, useEffect } from 'react'
-import { useAuth } from '@/components/providers/AuthProvider'
+import { useState } from 'react'
+import { useProfile } from '@/hooks/useProfile'
 import { AvatarUpload } from '@/components/profile/AvatarUpload'
-import { uploadAvatar, deleteAvatar, getAvatarUrl } from '@/lib/supabase/storage'
-import { getProfile, updateProfile } from '@/lib/services/profile'
+import { uploadAvatar, deleteAvatar } from '@/lib/supabase/storage'
 import { toast } from 'sonner'
 
 export default function AvatarEditPage() {
@@ -17,78 +17,85 @@ export default function AvatarEditPage() {
   const router = useRouter()
   const pathname = usePathname()
   const currentLocale = pathname.split('/')[1]
-  const { user } = useAuth()
-  const [profile, setProfile] = useState<any>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const { profile, loading, error, updateProfile } = useProfile()
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
   
-  useEffect(() => {
-    const loadProfile = async () => {
-      if (!user) return
-      
-      setIsLoading(true)
-      const { data, error } = await getProfile(user.id)
-      
-      if (error) {
-        console.error('Error loading profile:', error)
-        toast.error(t('settings.profileSettings.updateError'))
-      } else if (data) {
-        setProfile(data)
-      }
-      
-      setIsLoading(false)
-    }
-    
-    loadProfile()
-  }, [user, t])
-  
   const handleAvatarUpload = async (file: File) => {
-    if (!user) return
+    if (!profile) return
     
     setIsUploadingAvatar(true)
     
-    const { url, error } = await uploadAvatar(user.id, file)
-    
-    if (error) {
-      console.error('Error uploading avatar:', error)
-      toast.error(error.message)
-    } else if (url) {
-      // Update profile with new avatar URL
-      const { data, error: updateError } = await updateProfile(user.id, { avatar_url: url })
+    try {
+      // Upload to storage
+      const { url, error: uploadError } = await uploadAvatar(profile.id, file)
+      
+      if (uploadError) {
+        console.error('Error uploading avatar:', uploadError)
+        toast.error(uploadError.message)
+        setIsUploadingAvatar(false)
+        return
+      }
+      
+      // Update profile with new avatar URL (with optimistic update)
+      const { data, error: updateError } = await updateProfile(
+        { avatar_url: url },
+        { optimistic: true }
+      )
       
       if (updateError) {
         console.error('Error updating profile:', updateError)
         toast.error(t('settings.profileSettings.updateError'))
+        // Delete the uploaded file if profile update failed
+        if (url) {
+          await deleteAvatar(profile.id)
+        }
       } else if (data) {
-        setProfile(data)
         toast.success(t('settings.profileSettings.updateSuccess'))
       }
+    } catch (error) {
+      console.error('Error in avatar upload:', error)
+      toast.error(t('common.error'))
     }
     
     setIsUploadingAvatar(false)
   }
   
   const handleAvatarRemove = async () => {
-    if (!user) return
+    if (!profile) return
     
     setIsUploadingAvatar(true)
     
-    const { success, error } = await deleteAvatar(user.id)
-    
-    if (error) {
-      console.error('Error removing avatar:', error)
-      toast.error(error.message)
-    } else if (success) {
-      // Update profile to remove avatar URL
-      const { data, error: updateError } = await updateProfile(user.id, { avatar_url: null })
+    try {
+      // Optimistically update UI
+      const oldAvatarUrl = profile.avatar_url
+      
+      // Update profile to remove avatar URL (with optimistic update)
+      const { data, error: updateError } = await updateProfile(
+        { avatar_url: null },
+        { optimistic: true }
+      )
       
       if (updateError) {
         console.error('Error updating profile:', updateError)
         toast.error(t('settings.profileSettings.updateError'))
-      } else if (data) {
-        setProfile(data)
+        setIsUploadingAvatar(false)
+        return
+      }
+      
+      // Delete from storage after successful profile update
+      const { success, error: deleteError } = await deleteAvatar(profile.id)
+      
+      if (deleteError) {
+        console.error('Error removing avatar from storage:', deleteError)
+        // Revert the profile update if storage deletion failed
+        await updateProfile({ avatar_url: oldAvatarUrl })
+        toast.error(deleteError.message)
+      } else if (success && data) {
         toast.success(t('settings.profileSettings.updateSuccess'))
       }
+    } catch (error) {
+      console.error('Error in avatar removal:', error)
+      toast.error(t('common.error'))
     }
     
     setIsUploadingAvatar(false)
@@ -96,6 +103,57 @@ export default function AvatarEditPage() {
   
   const handleBack = () => {
     router.push(`/${currentLocale}/me`)
+  }
+  
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="max-w-[480px] mx-auto">
+          <div className="flex items-center gap-3 p-4 bg-content1 border-b">
+            <Skeleton className="w-10 h-10 rounded-medium" />
+            <Skeleton className="h-6 w-32" />
+          </div>
+          <div className="p-4">
+            <Card className="bg-content1">
+              <CardBody className="flex flex-col items-center py-8">
+                <div className="flex items-center gap-4">
+                  <Skeleton className="w-24 h-24 rounded-full" />
+                  <div className="flex flex-col gap-2">
+                    <Skeleton className="h-10 w-32 rounded-medium" />
+                    <Skeleton className="h-10 w-32 rounded-medium" />
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
+          </div>
+        </div>
+      </div>
+    )
+  }
+  
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="max-w-[480px] mx-auto">
+          <div className="flex items-center gap-3 p-4 bg-content1 border-b">
+            <Button
+              isIconOnly
+              variant="light"
+              onPress={handleBack}
+              className="material-symbols-rounded"
+            >
+              arrow_back
+            </Button>
+            <h1 className="text-lg font-semibold">{t('settings.profileSettings.avatar')}</h1>
+          </div>
+          <div className="p-4">
+            <Alert color="danger" description={error.message} />
+          </div>
+        </div>
+      </div>
+    )
   }
   
   return (
@@ -127,6 +185,13 @@ export default function AvatarEditPage() {
               />
             </CardBody>
           </Card>
+          
+          {/* Avatar guidelines */}
+          <div className="mt-4 text-sm text-default-500 space-y-1">
+            <p>• {t('settings.profileSettings.avatarGuideline1')}</p>
+            <p>• {t('settings.profileSettings.avatarGuideline2')}</p>
+            <p>• {t('settings.profileSettings.avatarGuideline3')}</p>
+          </div>
         </div>
       </div>
     </div>

@@ -1,17 +1,19 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/components/providers/AuthProvider'
-import { getProfile } from '@/lib/services/profile'
+import { getProfile, updateProfile as updateProfileService } from '@/lib/services/profile'
 import { Database } from '@/types/database'
 
 type Profile = Database['public']['Tables']['profiles']['Row']
+type ProfileUpdate = Database['public']['Tables']['profiles']['Update']
 
 export function useProfile() {
   const { user } = useAuth()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
+  const [isUpdating, setIsUpdating] = useState(false)
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -55,5 +57,58 @@ export function useProfile() {
     setLoading(false)
   }
 
-  return { profile, loading, error, refetch }
+  const updateProfile = useCallback(async (
+    updates: ProfileUpdate,
+    options?: { optimistic?: boolean }
+  ): Promise<{ data: Profile | null; error: Error | null }> => {
+    if (!user || !profile) {
+      return { data: null, error: new Error('User not authenticated') }
+    }
+
+    setIsUpdating(true)
+    setError(null)
+
+    // Optimistic update
+    if (options?.optimistic) {
+      setProfile(prev => prev ? { ...prev, ...updates } : null)
+    }
+
+    try {
+      const { data, error } = await updateProfileService(user.id, updates)
+      
+      if (error) {
+        // Revert optimistic update on error
+        if (options?.optimistic) {
+          await refetch()
+        }
+        setError(error)
+        setIsUpdating(false)
+        return { data: null, error }
+      }
+      
+      // Update with server response
+      setProfile(data)
+      setError(null)
+      setIsUpdating(false)
+      return { data, error: null }
+    } catch (error) {
+      // Revert optimistic update on error
+      if (options?.optimistic) {
+        await refetch()
+      }
+      const err = error as Error
+      setError(err)
+      setIsUpdating(false)
+      return { data: null, error: err }
+    }
+  }, [user, profile, refetch])
+
+  return { 
+    profile, 
+    loading, 
+    error, 
+    isUpdating,
+    refetch,
+    updateProfile
+  }
 }
