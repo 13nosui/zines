@@ -10,13 +10,14 @@ export async function createPostAction(formData: FormData) {
     data: { user },
     error: userErr,
   } = await supabase.auth.getUser();
+
   if (userErr || !user) {
     return { ok: false, error: `Not authenticated: ${userErr?.message ?? ""}` };
   }
 
   // 2) 入力取得
-  const title = (formData.get("title") as string | null) ?? "";
-  const body = (formData.get("body") as string | null) ?? "";
+  const titleRaw = (formData.get("title") as string | null) ?? "";
+  const bodyRaw = (formData.get("body") as string | null) ?? "";
   const tagsRaw = (formData.get("tags") as string | null) ?? "";
   const files = formData.getAll("images") as File[];
 
@@ -29,6 +30,7 @@ export async function createPostAction(formData: FormData) {
   for (const file of files.slice(0, 3)) {
     const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
     const path = `posts/${user.id}/${crypto.randomUUID()}.${ext}`;
+
     const { error: upErr } = await supabase.storage
       .from("posts")
       .upload(path, file, {
@@ -39,8 +41,16 @@ export async function createPostAction(formData: FormData) {
     if (upErr) {
       return { ok: false, error: `Upload failed: ${upErr.message}` };
     }
+
     const { data } = supabase.storage.from("posts").getPublicUrl(path);
     imageUrls.push(data.publicUrl);
+  }
+
+  if (!Array.isArray(imageUrls) || imageUrls.length < 1) {
+    return { ok: false, error: "No imageUrls after upload" };
+  }
+  if (imageUrls.length > 3) {
+    return { ok: false, error: "image_urls length > 3" };
   }
 
   // 4) タグ整形
@@ -50,27 +60,42 @@ export async function createPostAction(formData: FormData) {
     .filter(Boolean)
     .slice(0, 10);
 
-  // 5) DB挿入（RLSチェック）
-  const payload = {
-    user_id: user.id, // 重要
-    title: title || null,
-    body: body || null,
+  // 5) DB挿入（RLSチェック回避の一時ポリシー下でも通るよう型を厳密に）
+  const payload: {
+    user_id: string;
+    title: string;
+    body: string;
+    tags: string[] | null;
+    image_urls: string[];
+  } = {
+    user_id: user.id,
+    title: (titleRaw || "").trim() || "(no title)",
+    body: bodyRaw ?? "",
     tags: tags.length ? tags : null,
-    image_urls: imageUrls, // 必須
+    image_urls: imageUrls,
   };
 
-  const { error: insErr } = await supabase.from("posts").insert(payload);
+  // undefined 除去（安全策）
+  const clean = Object.fromEntries(
+    Object.entries(payload).filter(([, v]) => v !== undefined)
+  );
+
+  const { error: insErr } = await supabase
+    .from("posts")
+    .insert([clean])
+    .select()
+    .single();
 
   if (insErr) {
     const msg =
       "Insert failed: " +
       (insErr.message || "") +
       "; payload=" +
-      JSON.stringify(payload) +
+      JSON.stringify(clean) +
       "; user=" +
       user.id;
     return { ok: false, error: msg };
   }
 
-  return { ok: true };
+  return { ok: true, error: null };
 }
