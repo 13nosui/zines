@@ -27,6 +27,17 @@ export function MyPostsGrid({ userId, onEmptyState }: MyPostsGridProps) {
     loadPosts(true)
   }, [userId])
 
+  // Refresh posts when component mounts or pathname changes
+  useEffect(() => {
+    const handleFocus = () => {
+      // Refresh posts when window regains focus
+      loadPosts(true)
+    }
+    
+    window.addEventListener('focus', handleFocus)
+    return () => window.removeEventListener('focus', handleFocus)
+  }, [])
+
   const loadPosts = async (initial = false) => {
     if (!initial && (!hasMore || loadingMore)) return
     

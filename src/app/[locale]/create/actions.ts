@@ -1,6 +1,7 @@
 "use server";
 
 import { createServerClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
 
 export async function createPostAction(formData: FormData) {
   const supabase = createServerClient();
@@ -66,13 +67,13 @@ export async function createPostAction(formData: FormData) {
     title: string;
     body: string;
     tags: string[] | null;
-    image_urls: string[];
+    images: string[];
   } = {
     user_id: user.id,
     title: titleRaw.trim() || "Untitled",
     body: bodyRaw ?? "",
     tags: tags.length ? tags : null,
-    image_urls: imageUrls,
+    images: imageUrls,
   };
 
   // undefined 除去（安全策）
@@ -96,6 +97,12 @@ export async function createPostAction(formData: FormData) {
       user.id;
     return { ok: false, error: msg };
   }
+
+  // Revalidate paths to ensure fresh data
+  revalidatePath('/');
+  revalidatePath('/[locale]', 'page');
+  revalidatePath('/[locale]/me', 'page');
+  revalidatePath(`/me`);
 
   return { ok: true, error: null };
 }

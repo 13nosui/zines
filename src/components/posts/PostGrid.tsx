@@ -22,6 +22,11 @@ export function PostGrid({ initialPosts, loadMore, hasMore = false, enableLoadMo
   const router = useRouter()
   const loadMoreRef = useRef<() => Promise<PostWithProfile[]>>()
 
+  // Update posts when initialPosts change (e.g., after router.refresh())
+  useEffect(() => {
+    setPosts(initialPosts)
+  }, [initialPosts])
+
   const lastPostElementRef = useCallback(
     (node: HTMLDivElement) => {
       if (loading) return
