@@ -53,7 +53,7 @@ export default function CreateForm() {
       <button type="submit" disabled={pending}>
         {pending ? "Creating..." : "Create"}
       </button>
-      {message && <p style={{ whiteSpace: "pre-wrap" }}>{message}</p>}
+      {message && <pre style={{ whiteSpace: "pre-wrap" }}>{message}</pre>}
     </form>
   );
 }

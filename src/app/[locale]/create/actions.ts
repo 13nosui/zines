@@ -62,9 +62,13 @@ export async function createPostAction(formData: FormData) {
   const { error: insErr } = await supabase.from("posts").insert(payload);
 
   if (insErr) {
-    const msg = `Insert failed: ${insErr.message}; payload = ${JSON.stringify(
-      payload
-    )}; user = ${user.id}`;
+    const msg =
+      "Insert failed: " +
+      (insErr.message || "") +
+      "; payload=" +
+      JSON.stringify(payload) +
+      "; user=" +
+      user.id;
     return { ok: false, error: msg };
   }
 
