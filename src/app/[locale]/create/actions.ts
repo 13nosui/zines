@@ -20,10 +20,11 @@ export async function createPostAction(formData: FormData) {
   const tagsRaw = (formData.get("tags") as string | null) ?? "";
   const files = formData.getAll("images") as File[];
 
-  if (!files.length)
+  if (!files.length) {
     return { ok: false, error: "At least one image is required" };
+  }
 
-  // 3) 画像は最大3枚、posts/{user.id}/ にアップロード
+  // 3) 画像アップロード（最大3枚）
   const imageUrls: string[] = [];
   for (const file of files.slice(0, 3)) {
     const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
@@ -35,35 +36,37 @@ export async function createPostAction(formData: FormData) {
         cacheControl: "3600",
         upsert: false,
       });
-    if (upErr) return { ok: false, error: `Upload failed: ${upErr.message}` };
-
+    if (upErr) {
+      return { ok: false, error: `Upload failed: ${upErr.message}` };
+    }
     const { data } = supabase.storage.from("posts").getPublicUrl(path);
     imageUrls.push(data.publicUrl);
   }
 
-  // 4) タグ整形（最大10件）
+  // 4) タグ整形
   const tags = tagsRaw
     .split(",")
     .map((t) => t.trim())
     .filter(Boolean)
     .slice(0, 10);
 
-  // 5) DB挿入（ここがRLSチェック）
+  // 5) DB挿入（RLSチェック）
   const payload = {
-    user_id: user.id, // 重要: auth.uid() と一致させる
-    title: title || null, // 任意項目なら null 許容
+    user_id: user.id, // 重要
+    title: title || null,
     body: body || null,
     tags: tags.length ? tags : null,
-    image_urls: imageUrls, // 必須（Not null）
+    image_urls: imageUrls, // 必須
   };
 
   const { error: insErr } = await supabase.from("posts").insert(payload);
 
   if (insErr) {
-    // 失敗内容を可視化
     return {
       ok: false,
-      error: `Insert failed: ${insErr.message}. payload.user_id=${payload.user_id}`,
+      error: `Insert failed: ${insErr.message}; payload=${JSON.stringify(
+        payload
+      )}; user=${user.id}`,
     };
   }
 
