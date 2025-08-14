@@ -25,9 +25,9 @@ export async function createPostAction(formData: FormData) {
     return { ok: false, error: "At least one image is required" };
   }
 
-  // 3) 画像アップロード（最大3枚）
+  // 3) 画像アップロード（1枚のみ）
   const imageUrls: string[] = [];
-  for (const file of files.slice(0, 3)) {
+  for (const file of files.slice(0, 1)) {
     const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
     const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
 
@@ -49,8 +49,8 @@ export async function createPostAction(formData: FormData) {
   if (!Array.isArray(imageUrls) || imageUrls.length < 1) {
     return { ok: false, error: "No imageUrls after upload" };
   }
-  if (imageUrls.length > 3) {
-    return { ok: false, error: "image_urls length > 3" };
+  if (imageUrls.length > 1) {
+    return { ok: false, error: "Only one image is allowed" };
   }
 
   // 4) タグ整形
@@ -69,7 +69,7 @@ export async function createPostAction(formData: FormData) {
     image_urls: string[];
   } = {
     user_id: user.id,
-    title: (titleRaw || "").trim() || "(no title)",
+    title: titleRaw.trim() || "Untitled",
     body: bodyRaw ?? "",
     tags: tags.length ? tags : null,
     image_urls: imageUrls,

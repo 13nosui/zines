@@ -44,7 +44,7 @@ export default function CreateForm() {
     const files = e.target.files;
     if (files) {
       const newPreviews: string[] = [];
-      const fileArray = Array.from(files).slice(0, 3); // Max 3 images
+      const fileArray = Array.from(files).slice(0, 1); // Max 1 image
       
       fileArray.forEach((file) => {
         const reader = new FileReader();
@@ -85,29 +85,27 @@ export default function CreateForm() {
           {/* Image Upload Section */}
           <div>
             <label className="block text-sm font-medium mb-2">
-              Images (1-3 required)
+              Image (required)
             </label>
             
             {imagePreviews.length > 0 ? (
-              <div className="grid grid-cols-3 gap-2 mb-3">
-                {imagePreviews.map((preview, index) => (
-                  <div key={index} className="relative aspect-square">
-                    <Image
-                      src={preview}
-                      alt={`Preview ${index + 1}`}
-                      className="w-full h-full object-cover rounded-lg"
-                      classNames={{
-                        wrapper: "w-full h-full"
-                      }}
-                    />
-                  </div>
-                ))}
+              <div className="mb-3">
+                <div className="relative aspect-square max-w-sm mx-auto">
+                  <Image
+                    src={imagePreviews[0]}
+                    alt="Preview"
+                    className="w-full h-full object-cover rounded-lg"
+                    classNames={{
+                      wrapper: "w-full h-full"
+                    }}
+                  />
+                </div>
               </div>
             ) : (
               <div className="border-2 border-dashed border-default-300 rounded-lg p-8 text-center">
                 <Icon name="add_photo_alternate" size="xl" className="text-default-400 mb-2" />
                 <p className="text-sm text-default-500">
-                  Select 1-3 images to upload
+                  Select an image to upload
                 </p>
               </div>
             )}
@@ -115,7 +113,6 @@ export default function CreateForm() {
             <input
               name="images"
               type="file"
-              multiple
               accept="image/*"
               onChange={handleImageChange}
               className="hidden"
@@ -130,14 +127,14 @@ export default function CreateForm() {
               className="w-full"
               startContent={<Icon name="photo_library" />}
             >
-              {imagePreviews.length > 0 ? "Change Images" : "Select Images"}
+              {imagePreviews.length > 0 ? "Change Image" : "Select Image"}
             </Button>
           </div>
 
           {/* Title Input */}
           <Input
             name="title"
-            label="Title"
+            label="Title (optional)"
             placeholder="Enter a title for your post"
             maxLength={64}
             variant="bordered"
@@ -145,13 +142,12 @@ export default function CreateForm() {
               label: "text-sm font-medium",
               input: "text-base",
             }}
-            required
           />
 
           {/* Body Textarea */}
           <div>
             <label className="block text-sm font-medium mb-2">
-              Body
+              Body (optional)
             </label>
             <textarea
               name="body"
