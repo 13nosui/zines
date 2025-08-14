@@ -2,6 +2,7 @@
 
 import { createServerClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import type { Database } from "@/types/database";
 
 export async function createPostAction(formData: FormData) {
   const supabase = createServerClient();
@@ -62,40 +63,56 @@ export async function createPostAction(formData: FormData) {
     .slice(0, 10);
 
   // 5) DB挿入（RLSチェック回避の一時ポリシー下でも通るよう型を厳密に）
-  const payload: {
-    user_id: string;
-    title: string;
-    body: string;
-    tags: string[] | null;
-    images: string[];
-  } = {
+  const payload: Database["public"]["Tables"]["posts"]["Insert"] = {
     user_id: user.id,
     title: titleRaw.trim() || "Untitled",
     body: bodyRaw ?? "",
-    tags: tags.length ? tags : null,
+    tags: tags.length ? tags : [],
     images: imageUrls,
   };
 
-  // undefined 除去（安全策）
-  const clean = Object.fromEntries(
-    Object.entries(payload).filter(([, v]) => v !== undefined)
-  );
-
   const { error: insErr } = await supabase
     .from("posts")
-    .insert([clean])
+    .insert(payload)
     .select()
     .single();
 
   if (insErr) {
-    const msg =
-      "Insert failed: " +
-      (insErr.message || "") +
-      "; payload=" +
-      JSON.stringify(clean) +
-      "; user=" +
-      user.id;
-    return { ok: false, error: msg };
+    // If standard insert fails due to schema cache, try with explicit array syntax
+    if (insErr.message?.includes("schema cache") || insErr.message?.includes("images")) {
+      // Try inserting with explicit postgres array syntax
+      const { error: retryErr } = await supabase
+        .from("posts")
+        .insert({
+          user_id: payload.user_id,
+          title: payload.title,
+          body: payload.body,
+          tags: payload.tags || [],
+          images: `{${payload.images.map(url => `"${url}"`).join(",")}}`
+        } as any)
+        .select()
+        .single();
+
+      if (retryErr) {
+        const msg =
+          "Insert with array syntax failed: " +
+          (retryErr.message || "") +
+          "; payload=" +
+          JSON.stringify(payload) +
+          "; user=" +
+          user.id;
+        return { ok: false, error: msg };
+      }
+    } else {
+      const msg =
+        "Insert failed: " +
+        (insErr.message || "") +
+        "; payload=" +
+        JSON.stringify(payload) +
+        "; user=" +
+        user.id;
+      return { ok: false, error: msg };
+    }
   }
 
   // Revalidate paths to ensure fresh data
