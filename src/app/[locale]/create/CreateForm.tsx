@@ -11,12 +11,19 @@ export default function CreateForm() {
     e.preventDefault();
     setPending(true);
     setMessage(null);
+
     const form = e.currentTarget;
     const fd = new FormData(form);
+
     try {
       const res = await createPostAction(fd);
-      if (!res.ok) setMessage(res.error || "Failed to create post");
-      else {
+      // 追加: 返却オブジェクトをConsoleに出す
+      console.log("createPostAction result:", res);
+
+      if (!res.ok) {
+        // 追加: エラーメッセージ全文を表示（payload まで含まれる）
+        setMessage(res.error || "Failed to create post");
+      } else {
         setMessage("Created!");
         form.reset();
       }
@@ -46,7 +53,8 @@ export default function CreateForm() {
       <button type="submit" disabled={pending}>
         {pending ? "Creating..." : "Create"}
       </button>
-      {message && <p>{message}</p>}
+      {/* 追加: 返ってきたメッセージをそのまま表示 */}
+      {message && <p style={{ whiteSpace: "pre-wrap" }}>{message}</p>}
     </form>
   );
 }
