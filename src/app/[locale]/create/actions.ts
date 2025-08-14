@@ -29,7 +29,7 @@ export async function createPostAction(formData: FormData) {
   const imageUrls: string[] = [];
   for (const file of files.slice(0, 3)) {
     const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-    const path = `posts/${user.id}/${crypto.randomUUID()}.${ext}`;
+    const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
 
     const { error: upErr } = await supabase.storage
       .from("posts")
