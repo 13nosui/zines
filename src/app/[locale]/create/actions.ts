@@ -4,7 +4,11 @@ import { createServerClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import type { Database } from "@/types/database";
 
-export async function createPostAction(formData: FormData) {
+type CreatePostResult = 
+  | { ok: true; postId: string; warning?: string }
+  | { ok: false; error: string };
+
+export async function createPostAction(formData: FormData): Promise<CreatePostResult> {
   const supabase = createServerClient();
 
   // 1) 認証確認
@@ -63,7 +67,7 @@ export async function createPostAction(formData: FormData) {
     .slice(0, 10);
 
   // 5) DB挿入（RLSチェック回避の一時ポリシー下でも通るよう型を厳密に）
-  const payload: Database["public"]["Tables"]["posts"]["Insert"] = {
+  const payload = {
     user_id: user.id,
     title: titleRaw.trim() || "Untitled",
     body: bodyRaw ?? "",
@@ -71,38 +75,64 @@ export async function createPostAction(formData: FormData) {
     images: imageUrls,
   };
 
-  const { error: insErr } = await supabase
+  const { data: newPost, error: insErr } = await supabase
     .from("posts")
     .insert(payload)
     .select()
     .single();
 
   if (insErr) {
-    // If standard insert fails due to schema cache, try with explicit array syntax
+    // If standard insert fails due to schema cache, try a different approach
     if (insErr.message?.includes("schema cache") || insErr.message?.includes("images")) {
-      // Try inserting with explicit postgres array syntax
-      const { error: retryErr } = await supabase
+      // Try inserting without the type annotation and ensure arrays are properly formatted
+      const { data: retryPost, error: retryErr } = await supabase
         .from("posts")
-        .insert({
-          user_id: payload.user_id,
-          title: payload.title,
-          body: payload.body,
-          tags: payload.tags || [],
-          images: `{${payload.images.map(url => `"${url}"`).join(",")}}`
-        } as any)
+        .insert([{
+          user_id: user.id,
+          title: titleRaw.trim() || "Untitled",
+          body: bodyRaw ?? "",
+          tags: tags.length ? tags : [],
+          images: imageUrls
+        }])
         .select()
         .single();
 
       if (retryErr) {
-        const msg =
-          "Insert with array syntax failed: " +
-          (retryErr.message || "") +
-          "; payload=" +
-          JSON.stringify(payload) +
-          "; user=" +
-          user.id;
-        return { ok: false, error: msg };
+        // As a last resort, try without images to ensure posts can be created
+        const { data: fallbackPost, error: fallbackErr } = await supabase
+          .from("posts")
+          .insert([{
+            user_id: user.id,
+            title: titleRaw.trim() || "Untitled",
+            body: bodyRaw ?? "",
+            tags: tags.length ? tags : []
+            // Temporarily omit images field
+          }])
+          .select()
+          .single();
+
+        if (fallbackErr) {
+          const msg =
+            "Insert failed after all attempts: " +
+            (fallbackErr.message || "") +
+            "; original error: " +
+            (insErr.message || "") +
+            "; payload=" +
+            JSON.stringify(payload) +
+            "; user=" +
+            user.id;
+          return { ok: false, error: msg };
+        }
+        
+        // Post created without images - notify user
+        return { 
+          ok: true, 
+          postId: fallbackPost.id,
+          warning: "Post created successfully, but images could not be saved due to a temporary issue."
+        };
       }
+      
+      return { ok: true, postId: retryPost.id };
     } else {
       const msg =
         "Insert failed: " +
@@ -121,5 +151,5 @@ export async function createPostAction(formData: FormData) {
   revalidatePath('/[locale]/me', 'page');
   revalidatePath(`/me`);
 
-  return { ok: true, error: null };
+  return { ok: true, postId: newPost.id };
 }
