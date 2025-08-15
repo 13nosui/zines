@@ -32,7 +32,12 @@ export default function CreateForm() {
       if (!res.ok) {
         setMessage(res.error || "Failed to create post");
       } else {
-        setMessage("Post created successfully!");
+        // Check if there's a warning
+        if ('warning' in res && res.warning) {
+          setMessage(res.warning);
+        } else {
+          setMessage("Post created successfully!");
+        }
         form.reset();
         setImagePreviews([]);
         setTags([]);

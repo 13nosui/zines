@@ -187,3 +187,27 @@ CREATE POLICY "Users can update own post images" ON storage.objects
 
 CREATE POLICY "Users can delete own post images" ON storage.objects
   FOR DELETE USING (bucket_id = 'posts' AND auth.uid()::text = (storage.foldername(name))[1]);
+
+-- Create function to insert posts with images
+CREATE OR REPLACE FUNCTION insert_post_with_images(
+  p_user_id UUID,
+  p_title TEXT,
+  p_body TEXT,
+  p_tags TEXT[],
+  p_images TEXT[]
+) RETURNS posts AS $$
+DECLARE
+  new_post posts;
+BEGIN
+  INSERT INTO posts (user_id, title, body, tags, images)
+  VALUES (p_user_id, p_title, p_body, p_tags, p_images)
+  RETURNING * INTO new_post;
+  
+  RETURN new_post;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Grant execute permission to authenticated users
+GRANT EXECUTE ON FUNCTION insert_post_with_images TO authenticated;
+
+-- Enable RLS on posts table
