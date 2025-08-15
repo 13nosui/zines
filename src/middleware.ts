@@ -1,32 +1,43 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-import createMiddleware from 'next-intl/middleware'
-import { locales, defaultLocale } from './i18n'
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import createMiddleware from "next-intl/middleware";
+import { locales, defaultLocale } from "./i18n";
 
 // Create the intl middleware
 const intlMiddleware = createMiddleware({
   locales,
   defaultLocale,
-  localePrefix: 'always',
-  localeDetection: true
-})
+  localePrefix: "always",
+  localeDetection: true,
+});
 
 export async function middleware(req: NextRequest) {
+  const PUBLIC_FILE = /\.(.*)$/; // 静的ファイル（拡張子付き）
+  if (PUBLIC_FILE.test(req.nextUrl.pathname)) {
+    return NextResponse.next();
+  }
   // First handle i18n routing
-  const pathname = req.nextUrl.pathname
+  const pathname = req.nextUrl.pathname;
   const pathnameIsMissingLocale = locales.every(
     (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
-  )
+  );
 
   // Redirect if there is no locale
   if (pathnameIsMissingLocale) {
-    const locale = req.headers.get('accept-language')?.split(',')[0]?.split('-')[0] || defaultLocale
-    const validLocale = locales.includes(locale as any) ? locale : defaultLocale
-    
+    const locale =
+      req.headers.get("accept-language")?.split(",")[0]?.split("-")[0] ||
+      defaultLocale;
+    const validLocale = locales.includes(locale as any)
+      ? locale
+      : defaultLocale;
+
     return NextResponse.redirect(
-      new URL(`/${validLocale}${pathname.startsWith('/') ? '' : '/'}${pathname}`, req.url)
-    )
+      new URL(
+        `/${validLocale}${pathname.startsWith("/") ? "" : "/"}${pathname}`,
+        req.url
+      )
+    );
   }
 
   // Create a response object that we'll modify
@@ -34,7 +45,7 @@ export async function middleware(req: NextRequest) {
     request: {
       headers: req.headers,
     },
-  })
+  });
 
   // Create Supabase client with modern SSR approach
   const supabase = createServerClient(
@@ -43,78 +54,82 @@ export async function middleware(req: NextRequest) {
     {
       cookies: {
         get(name: string) {
-          return req.cookies.get(name)?.value
+          return req.cookies.get(name)?.value;
         },
         set(name: string, value: string, options: CookieOptions) {
-          req.cookies.set({ name, value, ...options })
+          req.cookies.set({ name, value, ...options });
           response = NextResponse.next({
             request: {
               headers: req.headers,
             },
-          })
-          response.cookies.set({ name, value, ...options })
+          });
+          response.cookies.set({ name, value, ...options });
         },
         remove(name: string, options: CookieOptions) {
-          req.cookies.delete(name)
+          req.cookies.delete(name);
           response = NextResponse.next({
             request: {
               headers: req.headers,
             },
-          })
-          response.cookies.delete(name)
+          });
+          response.cookies.delete(name);
         },
       },
     }
-  )
+  );
 
   // Get session
-  const { data: { session }, error } = await supabase.auth.getSession()
+  const {
+    data: { session },
+    error,
+  } = await supabase.auth.getSession();
 
   // Handle auth errors
   if (error) {
-    console.error('Middleware auth error:', error)
+    console.error("Middleware auth error:", error);
   }
 
   // Extract the locale from the pathname
-  const pathParts = pathname.split('/')
-  const locale = pathParts[1]
-  const pathWithoutLocale = '/' + pathParts.slice(2).join('/')
+  const pathParts = pathname.split("/");
+  const locale = pathParts[1];
+  const pathWithoutLocale = "/" + pathParts.slice(2).join("/");
 
   // Auth routes should be accessible without authentication
-  const isAuthRoute = pathWithoutLocale.startsWith('/auth/')
-  const isPublicRoute = pathWithoutLocale === '/' || 
-                       pathWithoutLocale.startsWith('/public/')
-  
+  const isAuthRoute = pathWithoutLocale.startsWith("/auth/");
+  const isPublicRoute =
+    pathWithoutLocale === "/" || pathWithoutLocale.startsWith("/public/");
+
   // Protected routes that require authentication
-  const isProtectedRoute = pathWithoutLocale === '/create' || 
-                          pathWithoutLocale === '/me' ||
-                          pathWithoutLocale.startsWith('/create/') ||
-                          pathWithoutLocale.startsWith('/me/')
-  
+  const isProtectedRoute =
+    pathWithoutLocale === "/create" ||
+    pathWithoutLocale === "/me" ||
+    pathWithoutLocale.startsWith("/create/") ||
+    pathWithoutLocale.startsWith("/me/");
+
   // If user is not authenticated and trying to access protected routes
   if (!session && isProtectedRoute) {
-    const redirectUrl = req.nextUrl.clone()
-    redirectUrl.pathname = `/${locale}/auth/sign-in`
+    const redirectUrl = req.nextUrl.clone();
+    redirectUrl.pathname = `/${locale}/auth/sign-in`;
     // Use returnTo parameter as requested
-    redirectUrl.searchParams.set('returnTo', pathname)
-    return NextResponse.redirect(redirectUrl)
+    redirectUrl.searchParams.set("returnTo", pathname);
+    return NextResponse.redirect(redirectUrl);
   }
-  
+
   // If user is authenticated and trying to access auth routes, redirect to home or returnTo
-  if (session && isAuthRoute && !pathWithoutLocale.includes('/callback')) {
-    const returnTo = req.nextUrl.searchParams.get('returnTo') || `/${locale}`
-    return NextResponse.redirect(new URL(returnTo, req.url))
+  if (session && isAuthRoute && !pathWithoutLocale.includes("/callback")) {
+    const returnTo = req.nextUrl.searchParams.get("returnTo") || `/${locale}`;
+    return NextResponse.redirect(new URL(returnTo, req.url));
   }
 
   // Set secure headers for authenticated sessions
   if (session) {
-    response.headers.set('X-Frame-Options', 'DENY')
-    response.headers.set('X-Content-Type-Options', 'nosniff')
-    response.headers.set('X-XSS-Protection', '1; mode=block')
-    response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+    response.headers.set("X-Frame-Options", "DENY");
+    response.headers.set("X-Content-Type-Options", "nosniff");
+    response.headers.set("X-XSS-Protection", "1; mode=block");
+    response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   }
-  
-  return response
+
+  return response;
 }
 
 export const config = {
@@ -127,6 +142,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public (public assets)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|public).*)',
+    "/((?!api|_next/static|_next/image|favicon.ico|public).*)",
   ],
-}
+};
