@@ -8,7 +8,7 @@ export default async function PostDetailPage({ params }: { params: { postId: str
     .from('posts')
     .select(`
       *,
-      profiles!inner (
+      profiles!user_id (
         id,
         username,
         avatar_url
