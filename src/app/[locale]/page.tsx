@@ -30,7 +30,7 @@ async function getPosts(offset = 0): Promise<PostWithProfile[]> {
 
   // Get likes count for each post
   const postsWithLikes = await Promise.all(
-    (data || []).map(async (post: any) => {
+    (posts || []).map(async (post: any) => {
       const { count } = await supabase
         .from('likes')
         .select('*', { count: 'exact', head: true })
