@@ -6,11 +6,14 @@ const POSTS_PER_PAGE = 24
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   const searchParams = request.nextUrl.searchParams
   const offset = parseInt(searchParams.get('offset') || '0')
   const limit = parseInt(searchParams.get('limit') || POSTS_PER_PAGE.toString())
+  
+  // Await the params to get the userId
+  const { userId } = await params
   
   const supabase = createServerClient()
   
@@ -24,7 +27,7 @@ export async function GET(
         avatar_url
       )
     `)
-    .eq('user_id', params.userId)
+    .eq('user_id', userId)
     .order('created_at', { ascending: false })
     .range(offset, offset + limit - 1)
 
