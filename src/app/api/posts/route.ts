@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     .from('posts')
     .select(`
       *,
-      profiles!inner (
+      profiles!user_id (
         id,
         username,
         avatar_url

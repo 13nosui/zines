@@ -10,18 +10,18 @@ const POSTS_PER_PAGE = 24
 async function getPosts(offset = 0): Promise<PostWithProfile[]> {
   const supabase = createServerClient()
   
-  const { data, error } = await supabase
+  const { data: posts, error } = await supabase
     .from('posts')
     .select(`
       *,
-      profiles!inner (
+      profiles!user_id (
         id,
         username,
         avatar_url
       )
     `)
     .order('created_at', { ascending: false })
-    .range(offset, offset + POSTS_PER_PAGE - 1)
+    .limit(12)
 
   if (error) {
     console.error('Error fetching posts:', error)
