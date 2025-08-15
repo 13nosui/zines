@@ -16,7 +16,7 @@ CREATE TABLE posts (
   user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   title TEXT CHECK (char_length(title) <= 64),
   body TEXT CHECK (char_length(body) <= 32),
-  images TEXT[] NOT NULL CHECK (array_length(images, 1) > 0 AND array_length(images, 1) <= 3),
+  image_urls TEXT[] NOT NULL CHECK (array_length(image_urls, 1) > 0 AND array_length(image_urls, 1) <= 3),
   tags TEXT[] DEFAULT '{}',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
@@ -188,19 +188,19 @@ CREATE POLICY "Users can update own post images" ON storage.objects
 CREATE POLICY "Users can delete own post images" ON storage.objects
   FOR DELETE USING (bucket_id = 'posts' AND auth.uid()::text = (storage.foldername(name))[1]);
 
--- Create function to insert posts with images
+-- Create function to insert posts with image_urls
 CREATE OR REPLACE FUNCTION insert_post_with_images(
   p_user_id UUID,
   p_title TEXT,
   p_body TEXT,
   p_tags TEXT[],
-  p_images TEXT[]
+  p_image_urls TEXT[]
 ) RETURNS posts AS $$
 DECLARE
   new_post posts;
 BEGIN
-  INSERT INTO posts (user_id, title, body, tags, images)
-  VALUES (p_user_id, p_title, p_body, p_tags, p_images)
+  INSERT INTO posts (user_id, title, body, tags, image_urls)
+  VALUES (p_user_id, p_title, p_body, p_tags, p_image_urls)
   RETURNING * INTO new_post;
   
   RETURN new_post;

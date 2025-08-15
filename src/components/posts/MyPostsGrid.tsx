@@ -119,9 +119,9 @@ export function MyPostsGrid({ userId, onEmptyState }: MyPostsGridProps) {
             onClick={() => handlePostClick(post.id)}
             style={{ aspectRatio: '1 / 1' }}
           >
-            {post.images && post.images[0] && (
+            {post.image_urls && post.image_urls[0] && (
               <Image
-                src={post.images[0]}
+                src={post.image_urls[0]}
                 alt={post.title || 'Post image'}
                 fill
                 sizes="(max-width: 640px) 33vw, 25vw"

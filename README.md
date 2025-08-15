@@ -81,7 +81,7 @@ src/
 
 The app uses the following main tables:
 - `profiles` - User profiles
-- `posts` - ZINE posts with images, title, body, and tags
+- `posts` - ZINE posts with image_urls, title, body, and tags
 - `follows` - Follow relationships
 - `likes` - Post likes
 

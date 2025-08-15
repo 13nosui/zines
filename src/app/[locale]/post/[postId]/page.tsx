@@ -25,9 +25,9 @@ export default async function PostDetailPage({ params }: { params: { postId: str
     <div className="min-h-screen bg-background p-4">
       <h1 className="text-2xl font-bold mb-4">{post.title || 'Untitled'}</h1>
       {post.body && <p className="mb-4">{post.body}</p>}
-      {post.images && post.images.length > 0 && (
+      {post.image_urls && post.image_urls.length > 0 && (
         <div className="grid gap-4">
-          {post.images.map((image: string, index: number) => (
+          {post.image_urls.map((image: string, index: number) => (
             <img
               key={index}
               src={image}

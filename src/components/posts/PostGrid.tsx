@@ -86,7 +86,7 @@ export function PostGrid({ initialPosts, loadMore, hasMore = false, enableLoadMo
           >
             <div className="aspect-square-content">
               <Image
-                src={post.images[0]}
+                src={post.image_urls[0]}
                 alt={post.title || 'Post image'}
                 fill
                 sizes="(max-width: 640px) 33vw, 25vw"
