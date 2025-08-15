@@ -72,7 +72,7 @@ export async function createPostAction(formData: FormData): Promise<CreatePostRe
     title: titleRaw.trim() || "Untitled",
     body: bodyRaw ?? "",
     tags: tags.length ? tags : [],
-    images: imageUrls,
+    image_urls: imageUrls,
   };
 
   const { data: newPost, error: insErr } = await supabase
@@ -83,7 +83,7 @@ export async function createPostAction(formData: FormData): Promise<CreatePostRe
 
   if (insErr) {
     // If standard insert fails due to schema cache, try a different approach
-    if (insErr.message?.includes("schema cache") || insErr.message?.includes("images")) {
+    if (insErr.message?.includes("schema cache") || insErr.message?.includes("image_urls")) {
       // Try inserting without the type annotation and ensure arrays are properly formatted
       const { data: retryPost, error: retryErr } = await supabase
         .from("posts")
@@ -92,13 +92,13 @@ export async function createPostAction(formData: FormData): Promise<CreatePostRe
           title: titleRaw.trim() || "Untitled",
           body: bodyRaw ?? "",
           tags: tags.length ? tags : [],
-          images: imageUrls
+          image_urls: imageUrls
         }])
         .select()
         .single();
 
       if (retryErr) {
-        // As a last resort, try without images to ensure posts can be created
+        // As a last resort, try without image_urls to ensure posts can be created
         const { data: fallbackPost, error: fallbackErr } = await supabase
           .from("posts")
           .insert([{
@@ -106,7 +106,7 @@ export async function createPostAction(formData: FormData): Promise<CreatePostRe
             title: titleRaw.trim() || "Untitled",
             body: bodyRaw ?? "",
             tags: tags.length ? tags : []
-            // Temporarily omit images field
+            // Temporarily omit image_urls field
           }])
           .select()
           .single();
@@ -124,7 +124,7 @@ export async function createPostAction(formData: FormData): Promise<CreatePostRe
           return { ok: false, error: msg };
         }
         
-        // Post created without images - notify user
+        // Post created without image_urls - notify user
         return { 
           ok: true, 
           postId: fallbackPost.id,
