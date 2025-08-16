@@ -193,6 +193,11 @@ export default function AuthForm({ mode }: AuthFormProps) {
         {message && (
           <div className="rounded-md bg-green-50 dark:bg-green-900/20 p-4">
             <p className="text-sm text-green-800 dark:text-green-200">{message}</p>
+            {mode === 'sign-up' && (
+              <p className="text-sm text-green-700 dark:text-green-300 mt-2">
+                Didn't receive the email? <Link href="/auth/resend-verification" className="underline font-medium">Click here to resend</Link>
+              </p>
+            )}
           </div>
         )}
 

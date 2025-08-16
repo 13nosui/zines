@@ -8,6 +8,7 @@ export {
   signOut,
   resetPassword,
   updatePassword,
+  resendVerificationEmail,
 } from './client-utils'
 
 // Server utilities  
