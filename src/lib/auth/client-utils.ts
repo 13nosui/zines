@@ -157,3 +157,27 @@ export async function updatePassword(newPassword: string) {
     return { data: null, error: getAuthErrorKey(error) }
   }
 }
+
+export async function resendVerificationEmail(email: string) {
+  const supabase = createClient()
+  
+  if (!supabase) {
+    return { data: null, error: 'auth.errors.unexpected' }
+  }
+  
+  try {
+    const { data, error } = await supabase.auth.resend({
+      type: 'signup',
+      email: email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      }
+    })
+    
+    if (error) throw error
+    
+    return { data, error: null }
+  } catch (error) {
+    return { data: null, error: getAuthErrorKey(error) }
+  }
+}
