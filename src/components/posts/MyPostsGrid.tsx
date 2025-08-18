@@ -34,9 +34,21 @@ export function MyPostsGrid({ userId, onEmptyState }: MyPostsGridProps) {
       loadPosts(true)
     }
     
+    // Also refresh on visibility change (for tab switching)
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadPosts(true)
+      }
+    }
+    
     window.addEventListener('focus', handleFocus)
-    return () => window.removeEventListener('focus', handleFocus)
-  }, [])
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    
+    return () => {
+      window.removeEventListener('focus', handleFocus)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [userId])
 
   const loadPosts = async (initial = false) => {
     if (!initial && (!hasMore || loadingMore)) return
@@ -107,28 +119,36 @@ export function MyPostsGrid({ userId, onEmptyState }: MyPostsGridProps) {
 
   return (
     <div className="w-full">
-      <div className="posts-grid">
+      <div className="grid grid-cols-3 sm:grid-cols-4 gap-0">
         {posts.map((post, index) => (
           <motion.div
             key={post.id}
             ref={index === posts.length - 1 ? lastPostElementRef : null}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: index * 0.01 }}
-            className="relative cursor-pointer bg-gray-100 dark:bg-gray-800"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: index * 0.02 }}
+            className="aspect-square-container cursor-pointer relative group"
             onClick={() => handlePostClick(post.id)}
-            style={{ aspectRatio: '1 / 1' }}
           >
-            {post.image_urls && post.image_urls[0] && (
-              <Image
-                src={post.image_urls[0]}
-                alt={post.title || 'Post image'}
-                fill
-                sizes="(max-width: 640px) 33vw, 25vw"
-                className="object-cover"
-                priority={index < 12}
-              />
-            )}
+            <div className="aspect-square-content">
+              {post.image_urls && post.image_urls[0] ? (
+                <Image
+                  src={post.image_urls[0]}
+                  alt={post.title || 'Post image'}
+                  fill
+                  sizes="(max-width: 640px) 33vw, 25vw"
+                  className="object-cover"
+                  priority={index < 12}
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                  <span className="material-symbols-rounded text-4xl text-gray-400 dark:text-gray-500">
+                    image
+                  </span>
+                </div>
+              )}
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity duration-200" />
+            </div>
           </motion.div>
         ))}
       </div>

@@ -28,6 +28,28 @@ export function PostGrid({ initialPosts, loadMore, hasMore = false, enableLoadMo
   useEffect(() => {
     setPosts(initialPosts)
   }, [initialPosts])
+  
+  // Refresh page when window regains focus to show new posts
+  useEffect(() => {
+    const handleFocus = () => {
+      // Trigger a refresh to get latest posts
+      router.refresh()
+    }
+    
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        router.refresh()
+      }
+    }
+    
+    window.addEventListener('focus', handleFocus)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    
+    return () => {
+      window.removeEventListener('focus', handleFocus)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [])
 
   const lastPostElementRef = useCallback(
     (node: HTMLDivElement) => {
@@ -87,14 +109,22 @@ export function PostGrid({ initialPosts, loadMore, hasMore = false, enableLoadMo
             onClick={() => handlePostClick(post.id)}
           >
             <div className="aspect-square-content">
-              <Image
-                src={post.image_urls[0]}
-                alt={post.title || 'Post image'}
-                fill
-                sizes="(max-width: 640px) 33vw, 25vw"
-                className="object-cover"
-                priority={index < 12}
-              />
+              {post.image_urls && post.image_urls[0] ? (
+                <Image
+                  src={post.image_urls[0]}
+                  alt={post.title || 'Post image'}
+                  fill
+                  sizes="(max-width: 640px) 33vw, 25vw"
+                  className="object-cover"
+                  priority={index < 12}
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                  <span className="material-symbols-rounded text-4xl text-gray-400 dark:text-gray-500">
+                    image
+                  </span>
+                </div>
+              )}
               <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity duration-200" />
             </div>
           </motion.div>
