@@ -31,9 +31,9 @@ export async function createPostAction(formData: FormData): Promise<CreatePostRe
     return { ok: false, error: "At least one image is required" };
   }
 
-  // 3) 画像アップロード（最大3枚）
+  // 3) 画像アップロード（1枚のみ）
   const imageUrls: string[] = [];
-  for (const file of files.slice(0, 3)) {
+  for (const file of files.slice(0, 1)) {
     const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
     const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
 
@@ -55,8 +55,8 @@ export async function createPostAction(formData: FormData): Promise<CreatePostRe
   if (!Array.isArray(imageUrls) || imageUrls.length < 1) {
     return { ok: false, error: "No imageUrls after upload" };
   }
-  if (imageUrls.length > 3) {
-    return { ok: false, error: "Maximum 3 images are allowed" };
+  if (imageUrls.length > 1) {
+    return { ok: false, error: "Only 1 image is allowed" };
   }
 
   // 4) タグ整形
@@ -149,7 +149,10 @@ export async function createPostAction(formData: FormData): Promise<CreatePostRe
   revalidatePath('/');
   revalidatePath('/[locale]', 'page');
   revalidatePath('/[locale]/me', 'page');
-  revalidatePath(`/me`);
+  revalidatePath(`/en`);
+  revalidatePath(`/en/me`);
+  revalidatePath(`/ja`);
+  revalidatePath(`/ja/me`);
 
   return { ok: true, postId: newPost.id };
 }

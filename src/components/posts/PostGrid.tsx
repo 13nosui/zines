@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { PostWithProfile } from '@/types'
@@ -20,6 +20,8 @@ export function PostGrid({ initialPosts, loadMore, hasMore = false, enableLoadMo
   const [canLoadMore, setCanLoadMore] = useState(hasMore && enableLoadMore)
   const observer = useRef<IntersectionObserver>()
   const router = useRouter()
+  const pathname = usePathname()
+  const currentLocale = pathname.split('/')[1]
   const loadMoreRef = useRef<() => Promise<PostWithProfile[]>>()
 
   // Update posts when initialPosts change (e.g., after router.refresh())
@@ -68,7 +70,7 @@ export function PostGrid({ initialPosts, loadMore, hasMore = false, enableLoadMo
   }
 
   const handlePostClick = (postId: string) => {
-    router.push(`/post/${postId}`)
+    router.push(`/${currentLocale}/post/${postId}`)
   }
 
   return (

@@ -1,7 +1,10 @@
 import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
+import Image from 'next/image'
+import Link from 'next/link'
+import { PostDetailClient } from './PostDetailClient'
 
-export default async function PostDetailPage({ params }: { params: { postId: string } }) {
+export default async function PostDetailPage({ params }: { params: { postId: string; locale: string } }) {
   const supabase = createServerClient()
   
   const { data: post, error } = await supabase
@@ -21,22 +24,16 @@ export default async function PostDetailPage({ params }: { params: { postId: str
     notFound()
   }
 
-  return (
-    <div className="min-h-screen bg-background p-4">
-      <h1 className="text-2xl font-bold mb-4">{post.title || 'Untitled'}</h1>
-      {post.body && <p className="mb-4">{post.body}</p>}
-      {post.image_urls && post.image_urls.length > 0 && (
-        <div className="grid gap-4">
-          {post.image_urls.map((image: string, index: number) => (
-            <img
-              key={index}
-              src={image}
-              alt={`Post image ${index + 1}`}
-              className="w-full rounded-lg"
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  )
+  // Get likes count for the post
+  const { count: likesCount } = await supabase
+    .from('likes')
+    .select('*', { count: 'exact', head: true })
+    .eq('post_id', params.postId)
+
+  const postWithLikes = {
+    ...post,
+    likes: { count: likesCount || 0 }
+  }
+
+  return <PostDetailClient post={postWithLikes} locale={params.locale} />
 }

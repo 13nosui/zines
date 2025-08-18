@@ -4,7 +4,7 @@ import { useState } from "react";
 import { createPostAction } from "./actions";
 import { Button, Input, Card, CardBody, Chip, Image, Spinner } from "@heroui/react";
 import { Icon } from "@/components/ui/Icon";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function CreateForm() {
   const [pending, setPending] = useState(false);
@@ -13,6 +13,8 @@ export default function CreateForm() {
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const router = useRouter();
+  const pathname = usePathname();
+  const currentLocale = pathname.split('/')[1];
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -44,7 +46,7 @@ export default function CreateForm() {
         
         // Redirect to user's profile page after a short delay
         setTimeout(() => {
-          router.push('/me');
+          router.push(`/${currentLocale}/me`);
           router.refresh(); // Force refresh to show new content
         }, 500);
       }
