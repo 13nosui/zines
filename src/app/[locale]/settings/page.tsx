@@ -299,6 +299,48 @@ export default function SettingsPage() {
 
       <Card>
         <CardHeader>
+          <h2 className="text-lg font-semibold">{t('settings.legal')}</h2>
+        </CardHeader>
+        <CardBody className="space-y-3">
+          <Button
+            variant="flat"
+            onPress={() => router.push(`/${currentLocale}/privacy-policy`)}
+            className="w-full justify-between"
+            endContent={
+              <span className="material-symbols-rounded text-default-400">
+                chevron_right
+              </span>
+            }
+          >
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-rounded text-default-500">
+                privacy_tip
+              </span>
+              <span>{t('profile.privacyPolicy')}</span>
+            </div>
+          </Button>
+          <Button
+            variant="flat"
+            onPress={() => router.push(`/${currentLocale}/terms-of-service`)}
+            className="w-full justify-between"
+            endContent={
+              <span className="material-symbols-rounded text-default-400">
+                chevron_right
+              </span>
+            }
+          >
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-rounded text-default-500">
+                description
+              </span>
+              <span>{t('profile.termsOfService')}</span>
+            </div>
+          </Button>
+        </CardBody>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <h2 className="text-lg font-semibold">{t('settings.account')}</h2>
         </CardHeader>
         <CardBody>
