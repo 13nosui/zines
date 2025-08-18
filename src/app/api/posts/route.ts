@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
 import { PostWithProfile } from '@/types'
 
+export const dynamic = "force-dynamic";
+
 const POSTS_PER_PAGE = 24
 
 export async function GET(request: NextRequest) {

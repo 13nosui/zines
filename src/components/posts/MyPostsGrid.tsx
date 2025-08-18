@@ -44,7 +44,7 @@ export function MyPostsGrid({ userId, onEmptyState }: MyPostsGridProps) {
     setLoadingMore(!initial)
     try {
       const offset = initial ? 0 : posts.length
-      const response = await fetch(`/api/posts/user/${userId}?offset=${offset}`)
+      const response = await fetch(`/api/posts/user/${userId}?offset=${offset}`, { cache: 'no-store' })
       if (!response.ok) throw new Error('Failed to load posts')
       
       const newPosts = await response.json()
