@@ -9,6 +9,8 @@ type CreatePostResult =
   | { ok: false; error: string };
 
 export async function createPostAction(formData: FormData): Promise<CreatePostResult> {
+  console.log('[createPostAction] Request received');
+  
   const supabase = createServerClient();
 
   // 1) 認証確認
@@ -18,8 +20,11 @@ export async function createPostAction(formData: FormData): Promise<CreatePostRe
   } = await supabase.auth.getUser();
 
   if (userErr || !user) {
+    console.log('[createPostAction] Authentication failed:', userErr?.message);
     return { ok: false, error: `Not authenticated: ${userErr?.message ?? ""}` };
   }
+  
+  console.log('[createPostAction] User authenticated:', user.id);
 
   // 2) 入力取得
   const titleRaw = (formData.get("title") as string | null) ?? "";
@@ -27,7 +32,15 @@ export async function createPostAction(formData: FormData): Promise<CreatePostRe
   const tagsRaw = (formData.get("tags") as string | null) ?? "";
   const files = formData.getAll("images") as File[];
 
+  console.log('[createPostAction] Form data:', {
+    title: titleRaw,
+    bodyLength: bodyRaw.length,
+    tags: tagsRaw,
+    filesCount: files.length
+  });
+
   if (!files.length) {
+    console.log('[createPostAction] No images provided');
     return { ok: false, error: "At least one image is required" };
   }
 
@@ -45,11 +58,13 @@ export async function createPostAction(formData: FormData): Promise<CreatePostRe
         upsert: false,
       });
     if (upErr) {
+      console.log('[createPostAction] Image upload failed:', upErr.message);
       return { ok: false, error: `Upload failed: ${upErr.message}` };
     }
 
     const { data } = supabase.storage.from("posts").getPublicUrl(path);
     imageUrls.push(data.publicUrl);
+    console.log('[createPostAction] Image uploaded:', path);
   }
 
   if (!Array.isArray(imageUrls) || imageUrls.length < 1) {
@@ -75,6 +90,11 @@ export async function createPostAction(formData: FormData): Promise<CreatePostRe
     image_urls: imageUrls,
   };
 
+  console.log('[createPostAction] Attempting to insert post:', {
+    ...payload,
+    image_urls_count: payload.image_urls.length
+  });
+
   const { data: newPost, error: insErr } = await supabase
     .from("posts")
     .insert(payload)
@@ -82,6 +102,7 @@ export async function createPostAction(formData: FormData): Promise<CreatePostRe
     .single();
 
   if (insErr) {
+    console.log('[createPostAction] Initial insert failed:', insErr.message);
     // If standard insert fails due to schema cache, try a different approach
     if (insErr.message?.includes("schema cache") || insErr.message?.includes("image_urls")) {
       // Try inserting without the type annotation and ensure arrays are properly formatted
@@ -125,6 +146,7 @@ export async function createPostAction(formData: FormData): Promise<CreatePostRe
         }
         
         // Post created without image_urls - notify user
+        console.log('[createPostAction] Post created without images:', fallbackPost.id);
         return { 
           ok: true, 
           postId: fallbackPost.id,
@@ -132,6 +154,7 @@ export async function createPostAction(formData: FormData): Promise<CreatePostRe
         };
       }
       
+      console.log('[createPostAction] Post created on retry:', retryPost.id);
       return { ok: true, postId: retryPost.id };
     } else {
       const msg =
@@ -146,6 +169,9 @@ export async function createPostAction(formData: FormData): Promise<CreatePostRe
   }
 
   // Revalidate paths to ensure fresh data
+  console.log('[createPostAction] Post created successfully:', newPost.id);
+  console.log('[createPostAction] Revalidating paths...');
+  
   revalidatePath('/');
   revalidatePath('/[locale]', 'page');
   revalidatePath('/[locale]/me', 'page');
@@ -154,5 +180,6 @@ export async function createPostAction(formData: FormData): Promise<CreatePostRe
   revalidatePath(`/ja`);
   revalidatePath(`/ja/me`);
 
+  console.log('[createPostAction] Success response:', { postId: newPost.id });
   return { ok: true, postId: newPost.id };
 }

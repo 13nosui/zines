@@ -15,6 +15,14 @@ export async function GET(
   // Await the params to get the userId
   const { userId } = await params
   
+  console.log('[GET /api/posts/user/[userId]] Request received:', {
+    url: request.url,
+    userId,
+    offset,
+    limit,
+    headers: Object.fromEntries(request.headers.entries())
+  })
+  
   const supabase = createServerClient()
   
   const { data, error } = await supabase
@@ -32,11 +40,24 @@ export async function GET(
     .range(offset, offset + limit - 1)
 
   if (error) {
+    console.log('[GET /api/posts/user/[userId]] Database error:', {
+      error: error.message,
+      code: error.code,
+      details: error.details,
+      userId
+    })
     return NextResponse.json(
       { error: error.message },
       { status: 500 }
     )
   }
+  
+  console.log('[GET /api/posts/user/[userId]] Posts fetched:', {
+    userId,
+    count: data?.length || 0,
+    offset,
+    limit
+  })
 
   // Get likes count and check if current user liked each post
   const { data: { user } } = await supabase.auth.getUser()
@@ -66,6 +87,18 @@ export async function GET(
       }
     })
   )
+
+  console.log('[GET /api/posts/user/[userId]] Response:', {
+    targetUserId: userId,
+    currentUserId: user?.id || 'anonymous',
+    totalPosts: postsWithLikes.length,
+    samplePost: postsWithLikes.length > 0 ? {
+      id: postsWithLikes[0].id,
+      title: postsWithLikes[0].title,
+      hasProfile: !!postsWithLikes[0].profiles,
+      likesCount: postsWithLikes[0].likes?.count
+    } : null
+  })
 
   return NextResponse.json(postsWithLikes as PostWithProfile[])
 }
