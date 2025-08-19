@@ -222,6 +222,9 @@ export default function SettingsPage() {
                 isInvalid={!!usernameError}
                 errorMessage={usernameError}
                 isDisabled={isLoadingProfile || isSaving}
+                classNames={{
+                  input: "text-foreground"
+                }}
                 startContent={
                   <span className="material-symbols-rounded text-default-400">
                     person
@@ -314,6 +317,9 @@ export default function SettingsPage() {
             selectedKeys={[theme || 'system']}
             onSelectionChange={(keys) => setTheme(Array.from(keys)[0] as string)}
             className="max-w-full"
+            classNames={{
+              value: "text-foreground"
+            }}
           >
             <SelectItem key="system">
               {t('settings.themes.system')}
@@ -337,6 +343,9 @@ export default function SettingsPage() {
             selectedKeys={[currentLocale]}
             onSelectionChange={(keys) => handleLocaleChange(Array.from(keys)[0] as string)}
             className="max-w-full"
+            classNames={{
+              value: "text-foreground"
+            }}
           >
             {locales.map((locale) => (
               <SelectItem key={locale}>
