@@ -32,12 +32,12 @@ export async function middleware(req: NextRequest) {
       ? locale
       : defaultLocale;
 
-    return NextResponse.redirect(
-      new URL(
-        `/${validLocale}${pathname.startsWith("/") ? "" : "/"}${pathname}`,
-        req.url
-      )
-    );
+    const url = req.nextUrl.clone();
+    url.pathname = `/${validLocale}${
+      pathname.startsWith("/") ? "" : "/"
+    }${pathname}`;
+    // Keep original query parameters (e.g., OAuth code)
+    return NextResponse.redirect(url);
   }
 
   // Create a response object that we'll modify
