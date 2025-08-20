@@ -160,7 +160,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
     setOauthLoading(provider)
 
     try {
-      const { error } = await signInWithOAuth(provider)
+      const { error } = await signInWithOAuth(provider, redirectTo)
       if (error) {
         // Check if error is a translation key
         const errorKey = getAuthErrorKey(error)

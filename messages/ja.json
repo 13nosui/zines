@@ -43,8 +43,12 @@
       "emailNotConfirmed": "アカウントを確認するためにメールをチェックしてください。",
       "userNotFound": "このメールアドレスのアカウントが見つかりません。",
       "sessionExpired": "セッションの有効期限が切れました。もう一度ログインしてください。",
-      "oauthError": "このプロバイダーでのログインでエラーが発生しました。もう一度お試しください。"
-    }
+      "oauthError": "このプロバイダーでのログインでエラーが発生しました。もう一度お試しください。",
+      "authenticationFailed": "認証に失敗しました"
+    },
+    "processingLogin": "ログイン処理中です...",
+    "pleaseWait": "認証の完了をお待ちください。",
+    "backToSignIn": "ログインに戻る"
   },
   "settings": {
     "title": "設定",

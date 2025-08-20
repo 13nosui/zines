@@ -44,8 +44,12 @@
       "emailNotConfirmed": "Please check your email to confirm your account.",
       "userNotFound": "No account found with this email address.",
       "sessionExpired": "Your session has expired. Please sign in again.",
-      "oauthError": "There was an error signing in with this provider. Please try again."
-    }
+      "oauthError": "There was an error signing in with this provider. Please try again.",
+      "authenticationFailed": "Authentication failed"
+    },
+    "processingLogin": "Processing your login...",
+    "pleaseWait": "Please wait while we complete your authentication.",
+    "backToSignIn": "Back to sign in"
   },
   "settings": {
     "title": "Settings",
