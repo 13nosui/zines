@@ -10,11 +10,16 @@ export async function GET(request: NextRequest) {
   const type = requestUrl.searchParams.get('type')
   const returnTo = requestUrl.searchParams.get('returnTo') || '/'
 
-  // Handle OAuth errors
+  // Get locale from pathname
+  const pathname = request.nextUrl.pathname
+  const localeMatch = pathname.match(/^\/([a-z]{2})\//)
+  const locale = localeMatch ? localeMatch[1] : 'en'
+
+  // Handle OAuth errors - redirect to callback page with error
   if (error) {
     console.error('OAuth callback error:', error, errorDescription)
     return NextResponse.redirect(
-      `${requestUrl.origin}/auth/sign-in?error=${encodeURIComponent(errorDescription || error)}`
+      `${requestUrl.origin}/${locale}/auth/callback?error=${encodeURIComponent(errorDescription || error)}`
     )
   }
 
@@ -28,40 +33,28 @@ export async function GET(request: NextRequest) {
       if (exchangeError) {
         console.error('Code exchange error:', exchangeError)
         return NextResponse.redirect(
-          `${requestUrl.origin}/auth/sign-in?error=${encodeURIComponent(exchangeError.message)}`
+          `${requestUrl.origin}/${locale}/auth/callback?error=${encodeURIComponent(exchangeError.message)}`
         )
       }
 
-      // Successful authentication
+      // Successful authentication - redirect to callback page
       if (data?.session) {
         // Check if this is a password recovery flow
         if (type === 'recovery') {
-          return NextResponse.redirect(`${requestUrl.origin}/auth/reset-password`)
+          return NextResponse.redirect(`${requestUrl.origin}/${locale}/auth/reset-password`)
         }
 
-        // For new users, we might want to redirect to onboarding
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('username')
-          .eq('id', data.session.user.id)
-          .single()
-
-        // If no profile exists or username is not set, redirect to onboarding
-        if (!profile?.username) {
-          return NextResponse.redirect(`${requestUrl.origin}/onboarding`)
-        }
-
-        // Otherwise redirect to the returnTo URL or home
-        return NextResponse.redirect(`${requestUrl.origin}${returnTo}`)
+        // Redirect to the callback page which will handle session polling
+        return NextResponse.redirect(`${requestUrl.origin}/${locale}/auth/callback?returnTo=${encodeURIComponent(returnTo)}`)
       }
     } catch (error) {
       console.error('Callback processing error:', error)
       return NextResponse.redirect(
-        `${requestUrl.origin}/auth/sign-in?error=${encodeURIComponent('Authentication failed')}`
+        `${requestUrl.origin}/${locale}/auth/callback?error=${encodeURIComponent('Authentication failed')}`
       )
     }
   }
 
-  // No code present, redirect to sign in
-  return NextResponse.redirect(`${requestUrl.origin}/auth/sign-in`)
+  // No code present, redirect to callback page with error
+  return NextResponse.redirect(`${requestUrl.origin}/${locale}/auth/callback?error=${encodeURIComponent('No authorization code received')}`)
 }

@@ -74,7 +74,7 @@ export async function signUpWithEmail(email: string, password: string) {
   }
 }
 
-export async function signInWithOAuth(provider: 'google' | 'github') {
+export async function signInWithOAuth(provider: 'google' | 'github', returnTo?: string) {
   const supabase = createClient()
   
   if (!supabase) {
@@ -82,10 +82,16 @@ export async function signInWithOAuth(provider: 'google' | 'github') {
   }
   
   try {
+    // Build the callback URL with returnTo parameter if provided
+    const callbackUrl = new URL(`${window.location.origin}/auth/callback`)
+    if (returnTo) {
+      callbackUrl.searchParams.set('returnTo', returnTo)
+    }
+
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: callbackUrl.toString(),
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
