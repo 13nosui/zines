@@ -69,9 +69,8 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // OPTIONAL: Verify webhook signature (uncomment to enable)
+    // Verify webhook signature
     // Requires GITHUB_WEBHOOK_SECRET environment variable to be set
-    /*
     if (signature && process.env.GITHUB_WEBHOOK_SECRET) {
       const isValid = verifySignature(
         rawBody,
@@ -92,7 +91,6 @@ export async function POST(request: NextRequest) {
       // In production, you should always verify signatures
       console.warn('⚠️  Webhook signature verification is disabled');
     }
-    */
     
     // Log the webhook payload
     console.log('📦 Webhook Payload:', JSON.stringify(payload, null, 2));
