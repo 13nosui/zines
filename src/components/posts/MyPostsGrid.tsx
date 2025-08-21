@@ -119,7 +119,7 @@ export function MyPostsGrid({ userId, onEmptyState }: MyPostsGridProps) {
 
   return (
     <div className="w-full">
-      <div className="grid grid-cols-3 sm:grid-cols-4 gap-0">
+      <div className="grid grid-cols-3 min-[640px]:grid-cols-4 gap-0">
         {posts.map((post, index) => (
           <motion.div
             key={post.id}
