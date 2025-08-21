@@ -147,14 +147,14 @@ export function PostDetailClient({ post, locale }: PostDetailClientProps) {
                 </div>
 
                 {/* Title */}
-                {post.title && (
+                {/* {post.title && (
                   <h2 className="text-xl font-semibold">{post.title}</h2>
-                )}
+                )} */}
 
                 {/* Body */}
-                {post.body && (
+                {/* {post.body && (
                   <p className="text-default-700 whitespace-pre-wrap">{post.body}</p>
-                )}
+                )} */}
 
                 {/* Tags */}
                 {post.tags && post.tags.length > 0 && (
