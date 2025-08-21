@@ -33,12 +33,6 @@ export function PostDetailClient({ post, locale }: PostDetailClientProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b">
-        <div className="max-w-4xl mx-auto px-4 py-3">
-        </div>
-      </div>
-
       {/* Content */}
       <div className="max-w-4xl mx-auto px-4 py-6">
         <motion.div
