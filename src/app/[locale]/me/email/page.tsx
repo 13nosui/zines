@@ -115,9 +115,8 @@ export default function EmailEditPage() {
     <div className="min-h-screen bg-background">
       <div className="max-w-[480px] mx-auto">
         {/* Header */}
-        <div className="flex items-center gap-3 p-4 bg-content1 border-b">
-          <BackButton variant="header" />
-          <h1 className="text-lg font-semibold flex-1">{t('auth.email')}</h1>
+        <div className="flex items-center justify-between p-4 bg-content1 border-b">
+          <h1 className="text-lg font-semibold">{t('auth.email')}</h1>
           <Button
             color="primary"
             onPress={handleUpdateEmail}
@@ -174,6 +173,11 @@ export default function EmailEditPage() {
             }
           />
         </div>
+      </div>
+      
+      {/* FAB Back Button */}
+      <div className="fixed bottom-6 left-6 z-50">
+        <BackButton variant="fab" onPress={handleBack} />
       </div>
     </div>
   )

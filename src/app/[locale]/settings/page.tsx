@@ -193,8 +193,7 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2 mb-6">
-        <BackButton variant="header" />
+      <div className="mb-6">
         <h1 className="text-2xl font-bold">{t('settings.title')}</h1>
       </div>
       
@@ -353,6 +352,11 @@ export default function SettingsPage() {
           </Button>
         </CardBody>
       </Card>
+      
+      {/* FAB Back Button */}
+      <div className="fixed bottom-6 left-6 z-50">
+        <BackButton variant="fab" />
+      </div>
     </div>
   )
 }
