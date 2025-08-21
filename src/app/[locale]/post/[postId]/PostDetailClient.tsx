@@ -75,9 +75,9 @@ export function PostDetailClient({ post, locale }: PostDetailClientProps) {
                 </div>
                 <div>
                   <p className="font-medium">{post.profiles?.username || 'Anonymous'}</p>
-                  <p className="text-xs text-default-500">
+                  {/* <p className="text-xs text-default-500">
                     {new Date(post.created_at).toLocaleDateString()}
-                  </p>
+                  </p> */}
                 </div>
               </div>
 
