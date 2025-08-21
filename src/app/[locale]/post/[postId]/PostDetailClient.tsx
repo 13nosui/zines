@@ -40,18 +40,18 @@ export function PostDetailClient({ post, locale }: PostDetailClientProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <Card className="shadow-none border-none bg-transparent">
-            <CardBody className="p-0 space-y-4">
+          <Card className="shadow-none border-none bg-transparent rounded-none">
+            <CardBody className="p-0 space-y-4 rounded-none">
 
               {/* Image Display */}
               {post.image_urls && post.image_urls.length > 0 && (
-                <div className="relative">
-                  <div className="relative aspect-square w-full bg-black overflow-hidden">
+                <div className="relative rounded-none">
+                  <div className="relative aspect-square w-full bg-black overflow-hidden rounded-none">
                     <Image
                       src={post.image_urls[currentImageIndex]}
                       alt={`Post image ${currentImageIndex + 1}`}
                       fill
-                      className="object-contain"
+                      className="object-contain rounded-none"
                       priority
                     />
                   </div>
