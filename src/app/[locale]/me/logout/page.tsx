@@ -47,7 +47,6 @@ export default function LogOutConfirmationPage() {
           >
             arrow_back
           </Button>
-          <h1 className="text-lg font-semibold">{t('auth.logout')}</h1>
         </div>
         
         {/* Content */}
@@ -60,9 +59,6 @@ export default function LogOutConfirmationPage() {
                 </span>
               </div>
               
-              <h2 className="text-lg font-semibold mb-2">
-                {t('profile.logoutConfirmTitle')}
-              </h2>
               
               <p className="text-sm text-default-500 mb-6">
                 {t('profile.logoutConfirmDescription')}

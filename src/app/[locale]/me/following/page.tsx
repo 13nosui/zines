@@ -143,7 +143,6 @@ export default function FollowingPage() {
           >
             arrow_back
           </Button>
-          <h1 className="text-lg font-semibold">{t('profile.following')}</h1>
         </div>
         
         {/* Content */}

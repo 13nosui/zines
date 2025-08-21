@@ -194,13 +194,11 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">{t('settings.title')}</h1>
       </div>
       
       {user && (
         <Card>
           <CardHeader>
-            <h2 className="text-lg font-semibold">{t('settings.profileSettings.title')}</h2>
           </CardHeader>
           <CardBody className="space-y-6">
             <div>
@@ -248,7 +246,6 @@ export default function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <h2 className="text-lg font-semibold">{t('settings.theme')}</h2>
         </CardHeader>
         <CardBody>
           <Select
@@ -272,7 +269,6 @@ export default function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <h2 className="text-lg font-semibold">{t('settings.language')}</h2>
         </CardHeader>
         <CardBody>
           <Select
@@ -292,7 +288,6 @@ export default function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <h2 className="text-lg font-semibold">{t('settings.legal')}</h2>
         </CardHeader>
         <CardBody className="space-y-3">
           <Button
@@ -334,7 +329,6 @@ export default function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <h2 className="text-lg font-semibold">{t('settings.account')}</h2>
         </CardHeader>
         <CardBody>
           <Button

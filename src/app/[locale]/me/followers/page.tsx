@@ -200,7 +200,6 @@ export default function FollowersPage() {
           >
             arrow_back
           </Button>
-          <h1 className="text-lg font-semibold">{t('profile.followers')}</h1>
         </div>
         
         {/* Content */}
