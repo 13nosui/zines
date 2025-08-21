@@ -30,15 +30,14 @@ export function BackButton({ onPress, variant = 'fab', className = '' }: BackBut
       >
         <Button
           isIconOnly
-          color="primary"
+          color="default"
           variant="shadow"
-          size="lg"
-          className={`w-14 h-14 ${className}`}
+          className={`rounded-full w-14 h-14 ${className}`}
           onPress={handleBack}
-          title="Go back"
+          aria-label="Go back"
         >
           <span className="material-symbols-rounded text-2xl">
-            arrow_back
+            chevron_backward
           </span>
         </Button>
       </motion.div>
