@@ -4,8 +4,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@heroui/react'
 import { Icon } from '@/components/ui/Icon'
 import { useRouter } from 'next/navigation'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { Database } from '@/types/database'
+import { createClient } from '@/lib/supabase/client'
 
 interface LikeButtonProps {
   postId: string
@@ -24,7 +23,7 @@ export function LikeButton({
   const [likeCount, setLikeCount] = useState(initialLikeCount)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClient()
 
   useEffect(() => {
     // Check if the current user has liked this post
@@ -32,27 +31,49 @@ export function LikeButton({
   }, [postId])
 
   const checkUserLike = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
+    try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser()
+      
+      if (userError) {
+        console.error('Error getting user:', userError)
+        return
+      }
+      
+      if (!user) {
+        console.log('No user found in checkUserLike')
+        return
+      }
 
-    const { data } = await supabase
-      .from('likes')
-      .select('id')
-      .eq('post_id', postId)
-      .eq('user_id', user.id)
-      .single()
+      const { data, error } = await supabase
+        .from('likes')
+        .select('id')
+        .eq('post_id', postId)
+        .eq('user_id', user.id)
+        .single()
 
-    setLiked(!!data)
+      if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+        console.error('Error checking user like:', error)
+      }
+
+      setLiked(!!data)
+    } catch (error) {
+      console.error('Error in checkUserLike:', error)
+    }
   }
 
   const handleLike = async () => {
+    console.log('Like button clicked!')
+    
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {
+      console.log('User not authenticated, redirecting to login')
       // Redirect to login if not authenticated
       router.push('/login')
       return
     }
+    
+    console.log('User authenticated:', user.id)
 
     setLoading(true)
     
@@ -65,7 +86,10 @@ export function LikeButton({
           .eq('post_id', postId)
           .eq('user_id', user.id)
 
-        if (!error) {
+        if (error) {
+          console.error('Error unliking post:', error)
+          showNotification('Failed to unlike post: ' + error.message)
+        } else {
           setLiked(false)
           setLikeCount(prev => Math.max(0, prev - 1))
           
@@ -84,7 +108,10 @@ export function LikeButton({
             user_id: user.id
           })
 
-        if (!error) {
+        if (error) {
+          console.error('Error liking post:', error)
+          showNotification('Failed to like post: ' + error.message)
+        } else {
           setLiked(true)
           setLikeCount(prev => prev + 1)
           
@@ -129,8 +156,11 @@ export function LikeButton({
         variant="light"
         size="sm"
         onPress={handleLike}
+        onClick={() => console.log('Button onClick fired')}
         isLoading={loading}
-        className="min-w-unit-10"
+        className="min-w-unit-10 relative z-10 cursor-pointer"
+        isDisabled={false}
+        aria-label={liked ? "Unlike post" : "Like post"}
       >
         <Icon 
           name={liked ? "favorite" : "favorite_border"} 
