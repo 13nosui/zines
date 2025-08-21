@@ -5,6 +5,7 @@ import { Button } from '@heroui/react'
 import { Icon } from '@/components/ui/Icon'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { cn } from '@heroui/theme'
 
 interface LikeButtonProps {
   postId: string
@@ -154,7 +155,10 @@ export function LikeButton({
         size="sm"
         onClick={handleLike}
         isLoading={loading}
-        className="min-w-unit-10 relative z-10 cursor-pointer transition-all"
+        className={cn(
+          "min-w-unit-10 relative z-10 cursor-pointer transition-all",
+          liked && "bg-danger text-white"
+        )}
         isDisabled={loading}
         aria-label={liked ? "Unlike post" : "Like post"}
       >
