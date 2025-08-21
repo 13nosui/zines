@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Card, CardBody, Button, Chip } from '@heroui/react'
 import { Icon } from '@/components/ui/Icon'
 import { motion } from 'framer-motion'
+import { BackButton } from '@/components/navigation/BackButton'
 
 interface PostDetailClientProps {
   post: any
@@ -16,9 +17,7 @@ export function PostDetailClient({ post, locale }: PostDetailClientProps) {
   const router = useRouter()
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
-  const handleBack = () => {
-    router.back()
-  }
+
 
   const handleNextImage = () => {
     if (post.image_urls && currentImageIndex < post.image_urls.length - 1) {
@@ -37,14 +36,7 @@ export function PostDetailClient({ post, locale }: PostDetailClientProps) {
       {/* Header */}
       <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-4">
-          <Button
-            isIconOnly
-            variant="light"
-            onPress={handleBack}
-            className="rounded-full"
-          >
-            <Icon name="arrow_back" />
-          </Button>
+          <BackButton variant="header" />
           <h1 className="text-lg font-semibold">Post Details</h1>
         </div>
       </div>

@@ -11,6 +11,7 @@ import { useState } from 'react'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { toast } from 'sonner'
+import { BackButton } from '@/components/navigation/BackButton'
 
 export default function EmailEditPage() {
   const t = useTranslations()
@@ -115,14 +116,7 @@ export default function EmailEditPage() {
       <div className="max-w-[480px] mx-auto">
         {/* Header */}
         <div className="flex items-center gap-3 p-4 bg-content1 border-b">
-          <Button
-            isIconOnly
-            variant="light"
-            onPress={handleBack}
-            className="material-symbols-rounded"
-          >
-            arrow_back
-          </Button>
+          <BackButton variant="header" />
           <h1 className="text-lg font-semibold flex-1">{t('auth.email')}</h1>
           <Button
             color="primary"
