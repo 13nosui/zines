@@ -28,7 +28,6 @@ export default function PrivacyPolicyPage() {
           >
             arrow_back
           </Button>
-          <h1 className="text-lg font-semibold">{t('profile.privacyPolicy')}</h1>
         </div>
         
         {/* Content */}
@@ -36,7 +35,6 @@ export default function PrivacyPolicyPage() {
           <Card className="bg-content1">
             <CardBody className="p-6 space-y-4">
               <div>
-                <h2 className="text-base font-semibold mb-2">{t('legal.privacyTitle')}</h2>
                 <p className="text-sm text-default-600">
                   {t('legal.privacyIntro')}
                 </p>

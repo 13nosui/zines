@@ -36,7 +36,6 @@ export function PostDetailClient({ post, locale }: PostDetailClientProps) {
       {/* Header */}
       <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b">
         <div className="max-w-4xl mx-auto px-4 py-3">
-          <h1 className="text-lg font-semibold">Post Details</h1>
         </div>
       </div>
 

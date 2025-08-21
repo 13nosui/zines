@@ -142,7 +142,6 @@ export default function LikesPage() {
           >
             arrow_back
           </Button>
-          <h1 className="text-lg font-semibold">{t('profile.likes')}</h1>
         </div>
         
         {/* Content */}

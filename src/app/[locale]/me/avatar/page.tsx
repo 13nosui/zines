@@ -139,7 +139,6 @@ export default function AvatarEditPage() {
       <div className="min-h-screen bg-background">
         <div className="max-w-[480px] mx-auto">
           <div className="flex items-center gap-3 p-4 bg-content1 border-b">
-            <h1 className="text-lg font-semibold">{t('settings.profileSettings.avatar')}</h1>
           </div>
           <div className="p-4">
             <Alert color="danger" description={error.message} />
@@ -154,7 +153,6 @@ export default function AvatarEditPage() {
       <div className="max-w-[480px] mx-auto">
         {/* Header */}
         <div className="flex items-center gap-3 p-4 bg-content1 border-b">
-          <h1 className="text-lg font-semibold">{t('settings.profileSettings.avatar')}</h1>
         </div>
         
         {/* Content */}

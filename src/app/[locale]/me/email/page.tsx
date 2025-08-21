@@ -116,7 +116,6 @@ export default function EmailEditPage() {
       <div className="max-w-[480px] mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-4 bg-content1 border-b">
-          <h1 className="text-lg font-semibold">{t('auth.email')}</h1>
           <Button
             color="primary"
             onPress={handleUpdateEmail}

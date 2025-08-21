@@ -41,7 +41,6 @@ export default function ColorModeSelectionPage() {
           >
             arrow_back
           </Button>
-          <h1 className="text-lg font-semibold">{t('profile.colorMode')}</h1>
         </div>
         
         {/* Content */}

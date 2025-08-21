@@ -25,7 +25,6 @@ export default async function CreatePage() {
   return (
     <>
       <div className="max-w-[480px] mx-auto">
-        <h1 className="text-2xl font-bold mb-6">Create Post</h1>
         <CreateForm />
       </div>
       

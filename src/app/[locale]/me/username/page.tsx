@@ -162,7 +162,6 @@ export default function UsernameEditPage() {
             >
               arrow_back
             </Button>
-            <h1 className="text-lg font-semibold flex-1">{t('settings.profileSettings.username')}</h1>
           </div>
           <div className="p-4">
             <Alert color="danger" description={error.message} />
@@ -185,7 +184,6 @@ export default function UsernameEditPage() {
           >
             arrow_back
           </Button>
-          <h1 className="text-lg font-semibold flex-1">{t('settings.profileSettings.username')}</h1>
           <Button
             color="primary"
             onPress={handleSave}
