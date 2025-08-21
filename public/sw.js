@@ -1,5 +1,5 @@
 // Service Worker version
-const CACHE_NAME = 'zines-pwa-v1';
+const CACHE_NAME = 'zines-pwa-v2';
 const urlsToCache = [
   '/',
   '/offline.html',
@@ -35,6 +35,26 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - serve from cache when offline
 self.addEventListener('fetch', (event) => {
+  // Skip service worker for non-GET requests
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  // Skip service worker for requests that explicitly don't want redirects followed
+  if (event.request.mode === 'no-cors' || event.request.mode === 'navigate') {
+    // For navigation requests, we need to handle them differently
+    if (event.request.mode === 'navigate') {
+      event.respondWith(
+        fetch(event.request)
+          .catch(() => {
+            // Return offline page if the user is offline
+            return caches.match('/offline.html');
+          })
+      );
+      return;
+    }
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
@@ -49,6 +69,11 @@ self.addEventListener('fetch', (event) => {
         return fetch(fetchRequest).then((response) => {
           // Check if we received a valid response
           if (!response || response.status !== 200 || response.type !== 'basic') {
+            return response;
+          }
+
+          // Don't cache POST requests or responses with redirects
+          if (event.request.method === 'POST' || response.redirected) {
             return response;
           }
 
