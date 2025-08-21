@@ -192,7 +192,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-[480px] mx-auto space-y-6">
       <div className="mb-6">
       </div>
       
