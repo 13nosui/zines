@@ -26,8 +26,11 @@ export function LikeButton({
   const supabase = createClient()
 
   useEffect(() => {
-    // Check if the current user has liked this post
-    checkUserLike()
+    // Only check user like if we don't have initialLiked set
+    // This prevents overriding the server-provided value
+    if (initialLiked === undefined) {
+      checkUserLike()
+    }
   }, [postId])
 
   const checkUserLike = async () => {
@@ -61,6 +64,8 @@ export function LikeButton({
   }
 
   const handleLike = async () => {
+    console.log('Like button clicked!', { liked, postId })
+    
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {
@@ -69,10 +74,15 @@ export function LikeButton({
       return
     }
 
+    // Optimistic update - update UI immediately
+    const wasLiked = liked
+    setLiked(!liked)
+    setLikeCount(prev => liked ? Math.max(0, prev - 1) : prev + 1)
+    
     setLoading(true)
     
     try {
-      if (liked) {
+      if (wasLiked) {
         // Unlike the post
         const { error } = await supabase
           .from('likes')
@@ -82,11 +92,11 @@ export function LikeButton({
 
         if (error) {
           console.error('Error unliking post:', error)
+          // Revert optimistic update on error
+          setLiked(true)
+          setLikeCount(prev => prev + 1)
           showNotification('Failed to unlike post: ' + error.message)
         } else {
-          setLiked(false)
-          setLikeCount(prev => Math.max(0, prev - 1))
-          
           // Show notification
           showNotification('Post unliked')
           
@@ -104,11 +114,11 @@ export function LikeButton({
 
         if (error) {
           console.error('Error liking post:', error)
+          // Revert optimistic update on error
+          setLiked(false)
+          setLikeCount(prev => Math.max(0, prev - 1))
           showNotification('Failed to like post: ' + error.message)
         } else {
-          setLiked(true)
-          setLikeCount(prev => prev + 1)
-          
           // Show notification
           showNotification('Post liked!')
           
@@ -121,6 +131,9 @@ export function LikeButton({
       router.refresh()
     } catch (error) {
       console.error('Error toggling like:', error)
+      // Revert optimistic update on error
+      setLiked(wasLiked)
+      setLikeCount(prev => wasLiked ? prev + 1 : Math.max(0, prev - 1))
       showNotification('Failed to update like')
     } finally {
       setLoading(false)
@@ -136,18 +149,19 @@ export function LikeButton({
     <div className="flex items-center gap-2">
       <Button
         isIconOnly
-        variant={liked ? "flat" : "light"}
+        variant={liked ? "solid" : "light"}
         color={liked ? "danger" : "default"}
         size="sm"
-        onPress={handleLike}
+        onClick={handleLike}
         isLoading={loading}
-        className="min-w-unit-10 relative z-10 cursor-pointer"
+        className="min-w-unit-10 relative z-10 cursor-pointer transition-all"
         isDisabled={loading}
         aria-label={liked ? "Unlike post" : "Like post"}
       >
         <Icon 
-          name={liked ? "favorite" : "favorite_border"} 
-          className={liked ? "text-danger" : "text-default-500"}
+          name="favorite" 
+          className={liked ? "text-white" : "text-default-500"}
+          filled={liked}
         />
       </Button>
       <span className="text-sm text-default-600">{likeCount} likes</span>
