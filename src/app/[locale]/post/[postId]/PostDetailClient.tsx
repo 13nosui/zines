@@ -34,7 +34,7 @@ export function PostDetailClient({ post, locale }: PostDetailClientProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 py-6">
+      <div className="max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -42,33 +42,11 @@ export function PostDetailClient({ post, locale }: PostDetailClientProps) {
         >
           <Card className="shadow-none border-none bg-transparent">
             <CardBody className="p-0 space-y-4">
-              {/* User Info */}
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-default-200 flex items-center justify-center">
-                  {post.profiles?.avatar_url ? (
-                    <Image
-                      src={post.profiles.avatar_url}
-                      alt={post.profiles.username || 'User'}
-                      width={40}
-                      height={40}
-                      className="rounded-full"
-                    />
-                  ) : (
-                    <Icon name="person" className="text-default-500" />
-                  )}
-                </div>
-                <div>
-                  <p className="font-medium">{post.profiles?.username || 'Anonymous'}</p>
-                  {/* <p className="text-xs text-default-500">
-                    {new Date(post.created_at).toLocaleDateString()}
-                  </p> */}
-                </div>
-              </div>
 
               {/* Image Display */}
               {post.image_urls && post.image_urls.length > 0 && (
                 <div className="relative">
-                  <div className="relative aspect-square max-w-2xl mx-auto bg-black rounded-lg overflow-hidden">
+                  <div className="relative aspect-square w-full bg-black overflow-hidden">
                     <Image
                       src={post.image_urls[currentImageIndex]}
                       alt={`Post image ${currentImageIndex + 1}`}
@@ -123,7 +101,27 @@ export function PostDetailClient({ post, locale }: PostDetailClientProps) {
               )}
 
               {/* Post Info */}
-              <div className="space-y-3">
+              <div className="space-y-3 px-4">
+                {/* User Info - moved here */}
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-default-200 flex items-center justify-center">
+                    {post.profiles?.avatar_url ? (
+                      <Image
+                        src={post.profiles.avatar_url}
+                        alt={post.profiles.username || 'User'}
+                        width={40}
+                        height={40}
+                        className="rounded-full"
+                      />
+                    ) : (
+                      <Icon name="person" className="text-default-500" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="font-medium">{post.profiles?.username || 'Anonymous'}</p>
+                  </div>
+                </div>
+
                 {/* Likes */}
                 <div className="flex items-center gap-2">
                   <Icon name="favorite" className="text-danger" />
