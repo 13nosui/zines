@@ -22,7 +22,7 @@ export default async function LocaleLayout({
   return (
     <NextIntlClientProvider messages={messages}>
       <div className="min-h-screen flex flex-col">
-        <main className="flex-1 w-full max-w-[480px] mx-auto px-4 py-8">
+        <main className="flex-1 w-full">
           {children}
         </main>
       </div>
