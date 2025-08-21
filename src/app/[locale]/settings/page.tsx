@@ -15,6 +15,7 @@ import { uploadAvatar, deleteAvatar } from '@/lib/supabase/storage'
 import { getProfile, updateProfile, checkUsernameAvailability } from '@/lib/services/profile'
 import { useDebounce } from '@/hooks/useDebounce'
 import { toast } from 'sonner'
+import { BackButton } from '@/components/navigation/BackButton'
 
 export default function SettingsPage() {
   const t = useTranslations()
@@ -193,14 +194,7 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2 mb-6">
-        <Button
-          isIconOnly
-          variant="light"
-          onPress={() => router.back()}
-          className="material-symbols-rounded"
-        >
-          arrow_back
-        </Button>
+        <BackButton variant="header" />
         <h1 className="text-2xl font-bold">{t('settings.title')}</h1>
       </div>
       
