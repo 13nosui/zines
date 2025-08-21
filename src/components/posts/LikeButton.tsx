@@ -39,10 +39,9 @@ export function LikeButton({
         return
       }
       
-      if (!user) {
-        console.log('No user found in checkUserLike')
-        return
-      }
+              if (!user) {
+          return
+        }
 
       const { data, error } = await supabase
         .from('likes')
@@ -62,18 +61,13 @@ export function LikeButton({
   }
 
   const handleLike = async () => {
-    console.log('Like button clicked!')
-    
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {
-      console.log('User not authenticated, redirecting to login')
       // Redirect to login if not authenticated
       router.push('/login')
       return
     }
-    
-    console.log('User authenticated:', user.id)
 
     setLoading(true)
     
@@ -134,32 +128,21 @@ export function LikeButton({
   }
 
   const showNotification = (message: string) => {
-    // Create a toast notification
-    const toast = document.createElement('div')
-    toast.className = 'fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-default-900 text-white px-4 py-2 rounded-lg shadow-lg z-50 animate-fade-in'
-    toast.textContent = message
-    document.body.appendChild(toast)
-
-    // Remove after 2 seconds
-    setTimeout(() => {
-      toast.classList.add('animate-fade-out')
-      setTimeout(() => {
-        document.body.removeChild(toast)
-      }, 300)
-    }, 2000)
+    // Notification removed per user request
+    console.log('Notification:', message)
   }
 
   return (
     <div className="flex items-center gap-2">
       <Button
         isIconOnly
-        variant="light"
+        variant={liked ? "flat" : "light"}
+        color={liked ? "danger" : "default"}
         size="sm"
         onPress={handleLike}
-        onClick={() => console.log('Button onClick fired')}
         isLoading={loading}
         className="min-w-unit-10 relative z-10 cursor-pointer"
-        isDisabled={false}
+        isDisabled={loading}
         aria-label={liked ? "Unlike post" : "Like post"}
       >
         <Icon 
