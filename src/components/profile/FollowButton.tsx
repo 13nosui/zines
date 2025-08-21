@@ -14,6 +14,7 @@ export function FollowButton({ userId, className }: FollowButtonProps) {
   const [isFollowing, setIsFollowing] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+  const [isCheckingUser, setIsCheckingUser] = useState(true)
   const router = useRouter()
   const supabase = createClient()
 
@@ -24,6 +25,7 @@ export function FollowButton({ userId, className }: FollowButtonProps) {
       if (user) {
         setCurrentUserId(user.id)
       }
+      setIsCheckingUser(false)
     }
     getUser()
   }, [supabase])
@@ -83,8 +85,8 @@ export function FollowButton({ userId, className }: FollowButtonProps) {
     }
   }
 
-  // Don't show the button if the user is viewing their own profile
-  if (currentUserId === userId) {
+  // Don't show the button while checking the current user or if the user is viewing their own profile
+  if (isCheckingUser || currentUserId === userId) {
     return null
   }
 
