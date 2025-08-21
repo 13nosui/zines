@@ -8,6 +8,7 @@ import { Icon } from '@/components/ui/Icon'
 import { motion } from 'framer-motion'
 import { BackButton } from '@/components/navigation/BackButton'
 import { FollowButton } from '@/components/profile/FollowButton'
+import { LikeButton } from '@/components/posts/LikeButton'
 
 interface PostDetailClientProps {
   post: any
@@ -129,10 +130,11 @@ export function PostDetailClient({ post, locale }: PostDetailClientProps) {
                 </div>
 
                 {/* Likes */}
-                <div className="flex items-center gap-2">
-                  <Icon name="favorite" className="text-danger" />
-                  <span className="text-sm">{post.likes?.count || 0} likes</span>
-                </div>
+                <LikeButton 
+                  postId={post.id}
+                  initialLiked={post.isLiked || false}
+                  initialLikeCount={post.likes?.count || 0}
+                />
 
                 {/* Title */}
                 {/* {post.title && (
