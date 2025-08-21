@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@heroui/react'
 import { useRouter } from 'next/navigation'
-import { createBrowserClient } from '@/lib/supabase/client'
+import { createClient } from '@/lib/supabase/client'
 
 interface FollowButtonProps {
   userId: string
@@ -15,7 +15,7 @@ export function FollowButton({ userId, className }: FollowButtonProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const router = useRouter()
-  const supabase = createBrowserClient()
+  const supabase = createClient()
 
   useEffect(() => {
     // Get current user
