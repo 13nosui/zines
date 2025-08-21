@@ -201,7 +201,7 @@ export default function CreateForm() {
                 onKeyDown={handleTagInputKeyDown}
                 placeholder="Add a tag..."
                 variant="bordered"
-                size="sm"
+                size="md"
                 disabled={tags.length >= 10}
               />
               <Button
