@@ -162,7 +162,7 @@ export function PostDetailClient({ post, locale }: PostDetailClientProps) {
                     {post.tags.map((tag: string, index: number) => (
                       <Chip
                         key={index}
-                        size="sm"
+                        size="lg"
                         variant="flat"
                         className="text-xs"
                       >

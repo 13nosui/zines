@@ -186,7 +186,7 @@ export default function CreateForm() {
                     key={tag}
                     onClose={() => handleRemoveTag(tag)}
                     variant="flat"
-                    size="sm"
+                    size="lg"
                   >
                     {tag}
                   </Chip>
