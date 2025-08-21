@@ -139,7 +139,6 @@ export default function AvatarEditPage() {
       <div className="min-h-screen bg-background">
         <div className="max-w-[480px] mx-auto">
           <div className="flex items-center gap-3 p-4 bg-content1 border-b">
-            <BackButton variant="header" />
             <h1 className="text-lg font-semibold">{t('settings.profileSettings.avatar')}</h1>
           </div>
           <div className="p-4">
@@ -155,7 +154,6 @@ export default function AvatarEditPage() {
       <div className="max-w-[480px] mx-auto">
         {/* Header */}
         <div className="flex items-center gap-3 p-4 bg-content1 border-b">
-          <BackButton variant="header" />
           <h1 className="text-lg font-semibold">{t('settings.profileSettings.avatar')}</h1>
         </div>
         
@@ -180,6 +178,11 @@ export default function AvatarEditPage() {
             <p>• {t('settings.profileSettings.avatarGuideline3')}</p>
           </div>
         </div>
+      </div>
+      
+      {/* FAB Back Button */}
+      <div className="fixed bottom-6 left-6 z-50">
+        <BackButton variant="fab" onPress={handleBack} />
       </div>
     </div>
   )

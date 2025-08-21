@@ -35,8 +35,7 @@ export function PostDetailClient({ post, locale }: PostDetailClientProps) {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-4">
-          <BackButton variant="header" />
+        <div className="max-w-4xl mx-auto px-4 py-3">
           <h1 className="text-lg font-semibold">Post Details</h1>
         </div>
       </div>
@@ -167,6 +166,11 @@ export function PostDetailClient({ post, locale }: PostDetailClientProps) {
             </CardBody>
           </Card>
         </motion.div>
+      </div>
+      
+      {/* FAB Back Button */}
+      <div className="fixed bottom-6 left-6 z-50">
+        <BackButton variant="fab" />
       </div>
     </div>
   )
