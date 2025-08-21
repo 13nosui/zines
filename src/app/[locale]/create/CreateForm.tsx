@@ -147,7 +147,7 @@ export default function CreateForm() {
           </div>
 
           {/* Title Input */}
-          <Input
+          {/* <Input
             name="title"
             label="Title (optional)"
             placeholder="Enter a title for your post"
@@ -157,10 +157,10 @@ export default function CreateForm() {
               label: "text-sm font-medium",
               input: "text-base",
             }}
-          />
+          /> */}
 
           {/* Body Textarea */}
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium mb-2">
               Body (optional)
             </label>
@@ -171,7 +171,7 @@ export default function CreateForm() {
               rows={3}
               className="w-full px-3 py-2 text-base border-2 border-default-200 rounded-lg focus:border-primary focus:outline-none resize-none transition-colors dark:bg-default-100/50"
             />
-          </div>
+          </div> */}
 
           {/* Tags Section */}
           <div>
