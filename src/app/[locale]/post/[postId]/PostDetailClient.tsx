@@ -7,6 +7,7 @@ import { Card, CardBody, Button, Chip } from '@heroui/react'
 import { Icon } from '@/components/ui/Icon'
 import { motion } from 'framer-motion'
 import { BackButton } from '@/components/navigation/BackButton'
+import { FollowButton } from '@/components/profile/FollowButton'
 
 interface PostDetailClientProps {
   post: any
@@ -103,23 +104,28 @@ export function PostDetailClient({ post, locale }: PostDetailClientProps) {
               {/* Post Info */}
               <div className="space-y-3 px-4">
                 {/* User Info - moved here */}
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-default-200 flex items-center justify-center">
-                    {post.profiles?.avatar_url ? (
-                      <Image
-                        src={post.profiles.avatar_url}
-                        alt={post.profiles.username || 'User'}
-                        width={40}
-                        height={40}
-                        className="rounded-full"
-                      />
-                    ) : (
-                      <Icon name="person" className="text-default-500" />
-                    )}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-default-200 flex items-center justify-center">
+                      {post.profiles?.avatar_url ? (
+                        <Image
+                          src={post.profiles.avatar_url}
+                          alt={post.profiles.username || 'User'}
+                          width={40}
+                          height={40}
+                          className="rounded-full"
+                        />
+                      ) : (
+                        <Icon name="person" className="text-default-500" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-medium">{post.profiles?.username || 'Anonymous'}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium">{post.profiles?.username || 'Anonymous'}</p>
-                  </div>
+                  {post.profiles?.id && (
+                    <FollowButton userId={post.profiles.id} />
+                  )}
                 </div>
 
                 {/* Likes */}
