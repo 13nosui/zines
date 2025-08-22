@@ -106,7 +106,10 @@ export function PostDetailClient({ post, locale }: PostDetailClientProps) {
               <div className="space-y-3 px-4">
                 {/* User Info - moved here */}
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
+                  <button
+                    className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+                    onClick={() => post.profiles?.id && router.push(`/${locale}/user/${post.profiles.id}`)}
+                  >
                     <div className="w-10 h-10 rounded-full bg-default-200 flex items-center justify-center">
                       {post.profiles?.avatar_url ? (
                         <Image
@@ -123,7 +126,7 @@ export function PostDetailClient({ post, locale }: PostDetailClientProps) {
                     <div>
                       <p className="font-medium">{post.profiles?.username || 'Anonymous'}</p>
                     </div>
-                  </div>
+                  </button>
                   {post.profiles?.id && (
                     <FollowButton userId={post.profiles.id} />
                   )}
@@ -133,7 +136,7 @@ export function PostDetailClient({ post, locale }: PostDetailClientProps) {
                 <LikeButton 
                   postId={post.id}
                   initialLiked={post.isLiked || false}
-                  initialLikeCount={post.likes?.count || 0}
+                  initialCount={post.likes?.count || 0}
                 />
 
                 {/* Title */}

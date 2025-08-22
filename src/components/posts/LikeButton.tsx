@@ -9,162 +9,102 @@ import { createClient } from '@/lib/supabase/client'
 interface LikeButtonProps {
   postId: string
   initialLiked?: boolean
-  initialLikeCount?: number
-  onLikeToggle?: (liked: boolean) => void
+  initialCount?: number
+  className?: string
+  showCount?: boolean
 }
 
 export function LikeButton({ 
   postId, 
   initialLiked = false, 
-  initialLikeCount = 0,
-  onLikeToggle 
+  initialCount = 0,
+  className,
+  showCount = true
 }: LikeButtonProps) {
-  const [liked, setLiked] = useState(initialLiked)
-  const [likeCount, setLikeCount] = useState(initialLikeCount)
-  const [loading, setLoading] = useState(false)
+  const [isLiked, setIsLiked] = useState(initialLiked)
+  const [likesCount, setLikesCount] = useState(initialCount)
+  const [isLoading, setIsLoading] = useState(false)
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const router = useRouter()
   const supabase = createClient()
 
   useEffect(() => {
-    // Only check user like if we don't have initialLiked set
-    // This prevents overriding the server-provided value
-    if (initialLiked === undefined) {
-      checkUserLike()
-    }
-  }, [postId])
-
-  const checkUserLike = async () => {
-    try {
-      const { data: { user }, error: userError } = await supabase.auth.getUser()
-      
-      if (userError) {
-        console.error('Error getting user:', userError)
-        return
+    // Get current user
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        setCurrentUserId(user.id)
       }
-      
-              if (!user) {
-          return
-        }
-
-      const { data, error } = await supabase
-        .from('likes')
-        .select('id')
-        .eq('post_id', postId)
-        .eq('user_id', user.id)
-        .single()
-
-      if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned"
-        console.error('Error checking user like:', error)
-      }
-
-      setLiked(!!data)
-    } catch (error) {
-      console.error('Error in checkUserLike:', error)
     }
-  }
+    getUser()
+  }, [supabase])
 
   const handleLike = async () => {
-    console.log('Like button clicked!', { liked, postId })
-    
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    if (!user) {
-      // Redirect to login if not authenticated
-      router.push('/login')
+    if (!currentUserId) {
+      // Redirect to sign-in if not authenticated
+      router.push('/auth/sign-in')
       return
     }
 
-    // Optimistic update - update UI immediately
-    const wasLiked = liked
-    setLiked(!liked)
-    setLikeCount(prev => liked ? Math.max(0, prev - 1) : prev + 1)
+    // Optimistic update
+    const newIsLiked = !isLiked
+    const newCount = newIsLiked ? likesCount + 1 : likesCount - 1
+    setIsLiked(newIsLiked)
+    setLikesCount(Math.max(0, newCount))
     
-    setLoading(true)
-    
+    setIsLoading(true)
+
     try {
-      if (wasLiked) {
-        // Unlike the post
-        const { error } = await supabase
-          .from('likes')
-          .delete()
-          .eq('post_id', postId)
-          .eq('user_id', user.id)
+      const response = await fetch('/api/likes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ postId }),
+      })
 
-        if (error) {
-          console.error('Error unliking post:', error)
-          // Revert optimistic update on error
-          setLiked(true)
-          setLikeCount(prev => prev + 1)
-          showNotification('Failed to unlike post: ' + error.message)
-        } else {
-          // Show notification
-          showNotification('Post unliked')
-          
-          // Callback
-          onLikeToggle?.(false)
-        }
+      if (!response.ok) {
+        // Revert optimistic update on error
+        setIsLiked(!newIsLiked)
+        setLikesCount(likesCount)
+        console.error('Error toggling like')
       } else {
-        // Like the post
-        const { error } = await supabase
-          .from('likes')
-          .insert({
-            post_id: postId,
-            user_id: user.id
-          })
-
-        if (error) {
-          console.error('Error liking post:', error)
-          // Revert optimistic update on error
-          setLiked(false)
-          setLikeCount(prev => Math.max(0, prev - 1))
-          showNotification('Failed to like post: ' + error.message)
-        } else {
-          // Show notification
-          showNotification('Post liked!')
-          
-          // Callback
-          onLikeToggle?.(true)
-        }
+        const data = await response.json()
+        // Update with actual server data
+        setLikesCount(data.likesCount)
       }
-      
-      // Refresh the page to update like counts
-      router.refresh()
     } catch (error) {
-      console.error('Error toggling like:', error)
       // Revert optimistic update on error
-      setLiked(wasLiked)
-      setLikeCount(prev => wasLiked ? prev + 1 : Math.max(0, prev - 1))
-      showNotification('Failed to update like')
+      setIsLiked(!newIsLiked)
+      setLikesCount(likesCount)
+      console.error('Error toggling like:', error)
     } finally {
-      setLoading(false)
+      setIsLoading(false)
     }
   }
 
-  const showNotification = (message: string) => {
-    // Notification removed per user request
-    console.log('Notification:', message)
-  }
-
   return (
-    <div className="flex items-center gap-2">
+    <div className={`flex items-center gap-1 ${className}`}>
       <Button
         isIconOnly
-        variant={liked ? "solid" : "light"}
-        color={liked ? "danger" : "default"}
         size="sm"
-        onClick={handleLike}
-        isLoading={loading}
-        className="min-w-unit-10 relative z-10 cursor-pointer transition-all"
-        isDisabled={loading}
-        aria-label={liked ? "Unlike post" : "Like post"}
+        variant="light"
+        onPress={handleLike}
+        isLoading={isLoading}
+        className="min-w-unit-8 h-unit-8"
+        aria-label={isLiked ? 'Unlike' : 'Like'}
       >
         <Icon 
           name="favorite" 
-          className={liked ? "text-white" : "text-default-500"}
-          filled={liked}
+          className={isLiked ? "text-danger" : "text-default-500"}
+          filled={isLiked}
         />
       </Button>
-      <span className="text-sm text-default-600">{likeCount} likes</span>
+      {showCount && (
+        <span className="text-sm text-default-500">
+          {likesCount}
+        </span>
+      )}
     </div>
   )
 }
