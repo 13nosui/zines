@@ -71,16 +71,14 @@ export function AuthProvider({ children, initialSession = null }: AuthProviderPr
           // Only refresh if it's not the initial mount
           if (!isInitialMount.current) {
             console.log('User signed in, refreshing data')
-            // Use router.refresh() sparingly and only when necessary
-            // Avoid immediate refresh to prevent loops
-            setTimeout(() => router.refresh(), 100)
+            // Remove router.refresh() to prevent reload loops
+            // The auth state change will naturally update the UI
           }
           break
         case 'SIGNED_OUT':
           console.log('User signed out, redirecting to home')
           router.push('/')
-          // Delay refresh to avoid race conditions
-          setTimeout(() => router.refresh(), 100)
+          // Remove router.refresh() to prevent reload loops
           break
         case 'TOKEN_REFRESHED':
           console.log('Token refreshed successfully')

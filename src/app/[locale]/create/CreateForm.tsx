@@ -47,7 +47,7 @@ export default function CreateForm() {
         // Redirect to user's profile page after a short delay
         setTimeout(() => {
           router.push(`/${currentLocale}/me`);
-          router.refresh(); // Force refresh to show new content
+          // Remove router.refresh() - navigation will load fresh data
         }, 500);
       }
     } finally {
