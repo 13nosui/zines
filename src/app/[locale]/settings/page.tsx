@@ -244,6 +244,66 @@ export default function SettingsPage() {
         </Card>
       )}
 
+      {/* Social & Activity Section */}
+      <Card>
+        <CardHeader>
+          <h3 className="text-lg font-semibold">{t('settings.social')}</h3>
+        </CardHeader>
+        <CardBody className="space-y-3">
+          <Button
+            variant="flat"
+            onPress={() => router.push(`/${currentLocale}/me/followers`)}
+            className="w-full justify-between"
+            endContent={
+              <span className="material-symbols-rounded text-default-400">
+                chevron_right
+              </span>
+            }
+          >
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-rounded text-default-500">
+                groups
+              </span>
+              <span>{t('settings.socialItems.followers')}</span>
+            </div>
+          </Button>
+          <Button
+            variant="flat"
+            onPress={() => router.push(`/${currentLocale}/me/following`)}
+            className="w-full justify-between"
+            endContent={
+              <span className="material-symbols-rounded text-default-400">
+                chevron_right
+              </span>
+            }
+          >
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-rounded text-default-500">
+                group
+              </span>
+              <span>{t('settings.socialItems.following')}</span>
+            </div>
+          </Button>
+          <Button
+            variant="flat"
+            onPress={() => router.push(`/${currentLocale}/me/likes`)}
+            className="w-full justify-between"
+            endContent={
+              <span className="material-symbols-rounded text-default-400">
+                chevron_right
+              </span>
+            }
+          >
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-rounded text-default-500">
+                favorite
+              </span>
+              <span>{t('settings.socialItems.likes')}</span>
+            </div>
+          </Button>
+        </CardBody>
+      </Card>
+
       <Card>
         <CardHeader>
         </CardHeader>

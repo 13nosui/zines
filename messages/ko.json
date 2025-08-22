@@ -26,6 +26,12 @@
     "profile": "Profile",
     "account": "Account",
     "legal": "법적 정보",
+    "social": "소셜 및 활동",
+    "socialItems": {
+      "followers": "팔로워",
+      "following": "팔로잉",
+      "likes": "좋아요한 게시물"
+    },
     "themes": {
       "system": "System",
       "light": "Light",

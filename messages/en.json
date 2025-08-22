@@ -58,6 +58,12 @@
     "profile": "Profile",
     "account": "Account",
     "legal": "Legal",
+    "social": "Social & Activity",
+    "socialItems": {
+      "followers": "Followers",
+      "following": "Following",
+      "likes": "Liked Posts"
+    },
     "themes": {
       "system": "System",
       "light": "Light",

@@ -47,25 +47,31 @@
     }
   },
   "settings": {
-    "title": "Settings",
-    "theme": "Theme",
-    "language": "Language",
-    "profile": "Profile",
-    "account": "Account",
+    "title": "Configuración",
+    "theme": "Tema",
+    "language": "Idioma",
+    "profile": "Perfil",
+    "account": "Cuenta",
     "legal": "Legal",
+    "social": "Social y Actividad",
+    "socialItems": {
+      "followers": "Seguidores",
+      "following": "Siguiendo",
+      "likes": "Publicaciones que me gustan"
+    },
     "themes": {
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
+      "system": "Sistema",
+      "light": "Claro",
+      "dark": "Oscuro"
     },
     "languages": {
-      "en": "English",
-      "ja": "Japanese",
-      "es": "Spanish",
-      "fr": "French",
-      "de": "German",
-      "zh": "Chinese",
-      "ko": "Korean"
+      "en": "Inglés",
+      "ja": "Japonés",
+      "es": "Español",
+      "fr": "Francés",
+      "de": "Alemán",
+      "zh": "Chino",
+      "ko": "Coreano"
     }
   },
   "zine": {
