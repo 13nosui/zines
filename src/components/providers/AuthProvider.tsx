@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Session, User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
@@ -40,12 +40,13 @@ export function AuthProvider({ children, initialSession = null }: AuthProviderPr
   const [loading, setLoading] = useState(!initialSession)
   const router = useRouter()
   const supabase = createClient()
+  const isInitialMount = useRef(true)
 
   useEffect(() => {
     if (!supabase) return
 
     // Get initial session if not provided
-    if (!initialSession) {
+    if (!initialSession && isInitialMount.current) {
       supabase.auth.getSession().then(({ data: { session } }) => {
         setSession(session)
         setUser(session?.user ?? null)
@@ -59,23 +60,45 @@ export function AuthProvider({ children, initialSession = null }: AuthProviderPr
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state change:', event)
       
+      // Update local state
       setSession(session)
       setUser(session?.user ?? null)
       setLoading(false)
 
-      // Handle specific auth events
-      if (event === 'SIGNED_IN') {
-        router.refresh()
-      } else if (event === 'SIGNED_OUT') {
-        router.push('/')
-        router.refresh()
-      } else if (event === 'TOKEN_REFRESHED') {
-        console.log('Token refreshed successfully')
-      } else if (event === 'USER_UPDATED') {
-        // Refresh the page to get updated user data
-        router.refresh()
+      // Handle specific auth events without causing reload loops
+      switch (event) {
+        case 'SIGNED_IN':
+          // Only refresh if it's not the initial mount
+          if (!isInitialMount.current) {
+            console.log('User signed in, refreshing data')
+            // Use router.refresh() sparingly and only when necessary
+            // Avoid immediate refresh to prevent loops
+            setTimeout(() => router.refresh(), 100)
+          }
+          break
+        case 'SIGNED_OUT':
+          console.log('User signed out, redirecting to home')
+          router.push('/')
+          // Delay refresh to avoid race conditions
+          setTimeout(() => router.refresh(), 100)
+          break
+        case 'TOKEN_REFRESHED':
+          console.log('Token refreshed successfully')
+          // No need to refresh the page on token refresh
+          break
+        case 'USER_UPDATED':
+          console.log('User data updated')
+          // Only refresh if specific user data changed that affects the UI
+          // Avoid automatic refresh to prevent loops
+          break
+        case 'PASSWORD_RECOVERY':
+          console.log('Password recovery initiated')
+          break
       }
     })
+
+    // Mark that initial mount is complete
+    isInitialMount.current = false
 
     return () => {
       subscription.unsubscribe()
@@ -111,6 +134,15 @@ export function AuthProvider({ children, initialSession = null }: AuthProviderPr
     loading,
     signOut,
     refreshSession,
+  }
+
+  // Don't render children until initial auth state is established
+  if (loading && isInitialMount.current) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    )
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

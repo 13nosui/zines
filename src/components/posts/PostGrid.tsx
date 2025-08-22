@@ -29,27 +29,16 @@ export function PostGrid({ initialPosts, loadMore, hasMore = false, enableLoadMo
     setPosts(initialPosts)
   }, [initialPosts])
   
-  // Refresh page when window regains focus to show new posts
+  // Update loadMore ref when it changes
   useEffect(() => {
-    const handleFocus = () => {
-      // Trigger a refresh to get latest posts
-      router.refresh()
-    }
+    if (!enableLoadMore || !loadMore) return
     
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        router.refresh()
-      }
-    }
-    
-    window.addEventListener('focus', handleFocus)
-    document.addEventListener('visibilitychange', handleVisibilityChange)
-    
-    return () => {
-      window.removeEventListener('focus', handleFocus)
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
-    }
-  }, [])
+    loadMoreRef.current = loadMore || (async () => {
+      const response = await fetch(`/api/posts?offset=${posts.length}`)
+      if (!response.ok) throw new Error('Failed to load posts')
+      return response.json()
+    })
+  }, [enableLoadMore, loadMore, posts.length])
 
   const lastPostElementRef = useCallback(
     (node: HTMLDivElement) => {
@@ -64,16 +53,6 @@ export function PostGrid({ initialPosts, loadMore, hasMore = false, enableLoadMo
     },
     [loading, canLoadMore]
   )
-
-  useEffect(() => {
-    if (!enableLoadMore || !loadMore) return
-    
-    loadMoreRef.current = loadMore || (async () => {
-      const response = await fetch(`/api/posts?offset=${posts.length}`)
-      if (!response.ok) throw new Error('Failed to load posts')
-      return response.json()
-    })
-  }, [enableLoadMore, loadMore, posts.length])
 
   const handleLoadMore = async () => {
     if (!loadMoreRef.current || loading || !canLoadMore) return
