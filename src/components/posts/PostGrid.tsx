@@ -76,7 +76,7 @@ export function PostGrid({ initialPosts, loadMore, hasMore = false, enableLoadMo
 
   return (
     <div className="w-full">
-      <div className="grid grid-cols-3 gap-0">
+      <div className="grid grid-cols-3 sm:grid-cols-[repeat(auto-fill,240px)] sm:justify-center gap-0">
         {posts.map((post, index) => (
           <motion.div
             key={post.id}
@@ -84,7 +84,7 @@ export function PostGrid({ initialPosts, loadMore, hasMore = false, enableLoadMo
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: index * 0.02 }}
-            className="aspect-square-container cursor-pointer relative group max-[639px]:max-w-[240px] max-[639px]:mx-auto"
+            className="aspect-square-container cursor-pointer relative group sm:w-[240px]"
             onClick={() => handlePostClick(post.id)}
           >
             <div className="aspect-square-content">
@@ -93,7 +93,7 @@ export function PostGrid({ initialPosts, loadMore, hasMore = false, enableLoadMo
                   src={post.image_urls[0]}
                   alt={post.title || 'Post image'}
                   fill
-                  sizes="(max-width: 640px) 33vw, 33vw"
+                  sizes="(max-width: 640px) 33vw, 240px"
                   className="object-cover"
                   priority={index < 12}
                 />
