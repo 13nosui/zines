@@ -15,6 +15,7 @@ export function FollowButton({ userId, className }: FollowButtonProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const [isCheckingUser, setIsCheckingUser] = useState(true)
+  const [isCheckingFollowStatus, setIsCheckingFollowStatus] = useState(true)
   const router = useRouter()
   const supabase = createClient()
 
@@ -33,19 +34,31 @@ export function FollowButton({ userId, className }: FollowButtonProps) {
   useEffect(() => {
     // Check if already following
     const checkFollowing = async () => {
-      if (!currentUserId || currentUserId === userId) return
+      if (!currentUserId || currentUserId === userId) {
+        setIsCheckingFollowStatus(false)
+        return
+      }
 
-      const { data } = await supabase
-        .from('follows')
-        .select('id')
-        .eq('follower_id', currentUserId)
-        .eq('following_id', userId)
-        .single()
+      try {
+        const { data } = await supabase
+          .from('follows')
+          .select('id')
+          .eq('follower_id', currentUserId)
+          .eq('following_id', userId)
+          .single()
 
-      setIsFollowing(!!data)
+        setIsFollowing(!!data)
+      } catch (error) {
+        // If there's an error (like no data found), assume not following
+        setIsFollowing(false)
+      } finally {
+        setIsCheckingFollowStatus(false)
+      }
     }
 
-    checkFollowing()
+    if (currentUserId !== null) {
+      checkFollowing()
+    }
   }, [currentUserId, userId, supabase])
 
   const handleFollow = async () => {
@@ -85,8 +98,8 @@ export function FollowButton({ userId, className }: FollowButtonProps) {
     }
   }
 
-  // Don't show the button while checking the current user or if the user is viewing their own profile
-  if (isCheckingUser || currentUserId === userId) {
+  // Don't show the button while checking the current user, checking follow status, or if the user is viewing their own profile
+  if (isCheckingUser || isCheckingFollowStatus || currentUserId === userId) {
     return null
   }
 
