@@ -60,7 +60,7 @@ export function FABNavigation({ items }: FABNavigationProps) {
                   color="primary"
                   variant="shadow"
                   size="lg"
-                  className="w-14 h-14"
+                  className="w-14 h-14 rounded-full"
                   onClick={() => handleItemClick(item)}
                   title={item.label}
                 >
@@ -79,7 +79,7 @@ export function FABNavigation({ items }: FABNavigationProps) {
         color="primary"
         variant="shadow"
         size="lg"
-        className="w-14 h-14"
+        className="w-14 h-14 rounded-full"
         onClick={() => setIsOpen(!isOpen)}
       >
         <motion.span
