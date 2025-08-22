@@ -119,7 +119,7 @@ export function MyPostsGrid({ userId, onEmptyState }: MyPostsGridProps) {
 
   return (
     <div className="w-full">
-      <div className="grid grid-cols-3 min-[640px]:grid-cols-4 gap-0 max-[639px]:flex max-[639px]:flex-wrap max-[639px]:justify-center">
+      <div className="grid grid-cols-3 gap-0">
         {posts.map((post, index) => (
           <motion.div
             key={post.id}
@@ -127,7 +127,7 @@ export function MyPostsGrid({ userId, onEmptyState }: MyPostsGridProps) {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: index * 0.02 }}
-            className="aspect-square-container cursor-pointer relative group max-[639px]:flex-grow max-[639px]:flex-shrink-0 max-[639px]:basis-[33.333%] max-[639px]:max-w-[240px]"
+            className="aspect-square-container cursor-pointer relative group max-[639px]:max-w-[240px] max-[639px]:mx-auto"
             onClick={() => handlePostClick(post.id)}
           >
             <div className="aspect-square-content">
@@ -136,7 +136,7 @@ export function MyPostsGrid({ userId, onEmptyState }: MyPostsGridProps) {
                   src={post.image_urls[0]}
                   alt={post.title || 'Post image'}
                   fill
-                  sizes="(max-width: 640px) 33vw, 25vw"
+                  sizes="(max-width: 640px) 33vw, 33vw"
                   className="object-cover"
                   priority={index < 12}
                 />
