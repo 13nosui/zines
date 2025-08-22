@@ -26,6 +26,12 @@
     "profile": "Profile",
     "account": "Account",
     "legal": "Légal",
+    "social": "Social et Activité",
+    "socialItems": {
+      "followers": "Abonnés",
+      "following": "Abonnements",
+      "likes": "Publications aimées"
+    },
     "themes": {
       "system": "System",
       "light": "Light",

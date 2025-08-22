@@ -57,6 +57,12 @@
     "profile": "プロフィール",
     "account": "アカウント",
     "legal": "法的情報",
+    "social": "ソーシャル・アクティビティ",
+    "socialItems": {
+      "followers": "フォロワー",
+      "following": "フォロー中",
+      "likes": "いいねした投稿"
+    },
     "themes": {
       "system": "システム",
       "light": "ライト",

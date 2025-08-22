@@ -26,6 +26,12 @@
     "profile": "Profile",
     "account": "Account",
     "legal": "法律",
+    "social": "社交与活动",
+    "socialItems": {
+      "followers": "关注者",
+      "following": "正在关注",
+      "likes": "喜欢的帖子"
+    },
     "themes": {
       "system": "System",
       "light": "Light",
