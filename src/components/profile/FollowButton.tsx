@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@heroui/react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { useTranslations } from 'next-intl'
 
 interface FollowButtonProps {
   userId: string
@@ -17,6 +18,7 @@ export function FollowButton({ userId, className }: FollowButtonProps) {
   const [isCheckingUser, setIsCheckingUser] = useState(true)
   const router = useRouter()
   const supabase = createClient()
+  const t = useTranslations()
 
   useEffect(() => {
     // Get current user
@@ -99,7 +101,7 @@ export function FollowButton({ userId, className }: FollowButtonProps) {
       isLoading={isLoading}
       className={className}
     >
-      {isFollowing ? 'Following' : 'Follow'}
+      {isFollowing ? t('profile.following') : t('profile.follow') || 'Follow'}
     </Button>
   )
 }
