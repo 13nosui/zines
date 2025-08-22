@@ -76,7 +76,7 @@ export function PostGrid({ initialPosts, loadMore, hasMore = false, enableLoadMo
 
   return (
     <div className="w-full">
-      <div className="grid grid-cols-3 min-[640px]:grid-cols-4 gap-0">
+      <div className="grid grid-cols-3 min-[640px]:grid-cols-4 gap-0 max-[639px]:flex max-[639px]:flex-wrap max-[639px]:justify-center">
         {posts.map((post, index) => (
           <motion.div
             key={post.id}
@@ -84,7 +84,7 @@ export function PostGrid({ initialPosts, loadMore, hasMore = false, enableLoadMo
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: index * 0.02 }}
-            className="aspect-square-container cursor-pointer relative group"
+            className="aspect-square-container cursor-pointer relative group max-[639px]:flex-grow max-[639px]:flex-shrink-0 max-[639px]:basis-[33.333%] max-[639px]:max-w-[240px]"
             onClick={() => handlePostClick(post.id)}
           >
             <div className="aspect-square-content">
