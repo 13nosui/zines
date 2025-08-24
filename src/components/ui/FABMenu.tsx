@@ -27,7 +27,7 @@ export function FABMenu({ hasNoPosts = false }: FABMenuProps) {
   if (hasNoPosts) {
     return (
       <motion.button
-        className="fixed bottom-6 right-6 w-14 h-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center z-50"
+        className="fixed bottom-6 right-6 w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center z-50"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => handleNavigation('/create')}
@@ -36,7 +36,7 @@ export function FABMenu({ hasNoPosts = false }: FABMenuProps) {
         transition={{ type: "spring", stiffness: 260, damping: 20 }}
       >
         <span className="material-symbols-rounded">add</span>
-        <span className="absolute -top-8 whitespace-nowrap bg-content1 text-foreground px-3 py-1 rounded-full text-sm shadow-md">
+        <span className="absolute -top-8 whitespace-nowrap bg-content1 text-foreground px-3 py-1 rounded-full text-sm">
           Post Zine
         </span>
       </motion.button>
@@ -61,7 +61,7 @@ export function FABMenu({ hasNoPosts = false }: FABMenuProps) {
 
       {/* Main FAB */}
       <motion.button
-        className="fixed bottom-6 right-6 w-14 h-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center z-50"
+        className="fixed bottom-6 right-6 w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center z-50"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={toggleMenu}
@@ -78,7 +78,7 @@ export function FABMenu({ hasNoPosts = false }: FABMenuProps) {
           <>
             {/* Settings */}
             <motion.button
-              className="fixed bottom-6 right-6 w-14 h-14 bg-content2 text-foreground rounded-full shadow-lg flex items-center justify-center z-50"
+              className="fixed bottom-6 right-6 w-14 h-14 bg-content2 text-foreground rounded-full flex items-center justify-center z-50"
               initial={{ scale: 0, y: 0 }}
               animate={{ scale: 1, y: -200 }}
               exit={{ scale: 0, y: 0 }}
@@ -92,7 +92,7 @@ export function FABMenu({ hasNoPosts = false }: FABMenuProps) {
 
             {/* Home */}
             <motion.button
-              className="fixed bottom-6 right-6 w-14 h-14 bg-content2 text-foreground rounded-full shadow-lg flex items-center justify-center z-50"
+              className="fixed bottom-6 right-6 w-14 h-14 bg-content2 text-foreground rounded-full flex items-center justify-center z-50"
               initial={{ scale: 0, y: 0 }}
               animate={{ scale: 1, y: -140 }}
               exit={{ scale: 0, y: 0 }}
@@ -106,7 +106,7 @@ export function FABMenu({ hasNoPosts = false }: FABMenuProps) {
 
             {/* Post */}
             <motion.button
-              className="fixed bottom-6 right-6 w-14 h-14 bg-content2 text-foreground rounded-full shadow-lg flex items-center justify-center z-50"
+              className="fixed bottom-6 right-6 w-14 h-14 bg-content2 text-foreground rounded-full flex items-center justify-center z-50"
               initial={{ scale: 0, y: 0 }}
               animate={{ scale: 1, y: -80 }}
               exit={{ scale: 0, y: 0 }}
