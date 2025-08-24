@@ -45,6 +45,20 @@ export function FABMenu({ hasNoPosts = false }: FABMenuProps) {
 
   return (
     <>
+      {/* Blur Overlay */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="fixed inset-0 backdrop-blur-md bg-black/30 z-40"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={toggleMenu}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Main FAB */}
       <motion.button
         className="fixed bottom-6 right-6 w-14 h-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center z-50"
@@ -64,7 +78,7 @@ export function FABMenu({ hasNoPosts = false }: FABMenuProps) {
           <>
             {/* Settings */}
             <motion.button
-              className="fixed bottom-6 right-6 w-14 h-14 bg-content2 text-foreground rounded-full shadow-lg flex items-center justify-center z-40"
+              className="fixed bottom-6 right-6 w-14 h-14 bg-content2 text-foreground rounded-full shadow-lg flex items-center justify-center z-50"
               initial={{ scale: 0, y: 0 }}
               animate={{ scale: 1, y: -200 }}
               exit={{ scale: 0, y: 0 }}
@@ -78,7 +92,7 @@ export function FABMenu({ hasNoPosts = false }: FABMenuProps) {
 
             {/* Home */}
             <motion.button
-              className="fixed bottom-6 right-6 w-14 h-14 bg-content2 text-foreground rounded-full shadow-lg flex items-center justify-center z-40"
+              className="fixed bottom-6 right-6 w-14 h-14 bg-content2 text-foreground rounded-full shadow-lg flex items-center justify-center z-50"
               initial={{ scale: 0, y: 0 }}
               animate={{ scale: 1, y: -140 }}
               exit={{ scale: 0, y: 0 }}
@@ -92,7 +106,7 @@ export function FABMenu({ hasNoPosts = false }: FABMenuProps) {
 
             {/* Post */}
             <motion.button
-              className="fixed bottom-6 right-6 w-14 h-14 bg-content2 text-foreground rounded-full shadow-lg flex items-center justify-center z-40"
+              className="fixed bottom-6 right-6 w-14 h-14 bg-content2 text-foreground rounded-full shadow-lg flex items-center justify-center z-50"
               initial={{ scale: 0, y: 0 }}
               animate={{ scale: 1, y: -80 }}
               exit={{ scale: 0, y: 0 }}
