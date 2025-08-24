@@ -192,9 +192,10 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="max-w-[480px] mx-auto space-y-6">
-      <div className="mb-6">
-      </div>
+    <div className="h-full overflow-y-auto pb-20">
+      <div className="max-w-[480px] mx-auto space-y-6 p-4">
+        <div className="mb-6">
+        </div>
       
       {user && (
         <Card>
@@ -407,9 +408,10 @@ export default function SettingsPage() {
         </CardBody>
       </Card>
       
-      {/* FAB Back Button */}
-      <div className="fixed bottom-6 left-6 z-50">
-        <BackButton variant="fab" />
+        {/* FAB Back Button */}
+        <div className="fixed bottom-6 left-6 z-50">
+          <BackButton variant="fab" />
+        </div>
       </div>
     </div>
   )

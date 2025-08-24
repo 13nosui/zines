@@ -57,12 +57,12 @@ export default async function HomePage() {
   ]
 
   return (
-    <>
+    <div className="h-full overflow-y-auto">
       <PostGridClient
         initialPosts={initialPosts}
         hasMore={initialPosts.length === POSTS_PER_PAGE}
       />
       <FABNavigation items={fabItems} />
-    </>
+    </div>
   )
 }

@@ -14,7 +14,7 @@ export function ProfileClient({ session }: ProfileClientProps) {
   const [hasNoPosts, setHasNoPosts] = useState(false)
 
   return (
-    <div className="min-h-screen">
+    <div className="h-full overflow-y-auto">
       {/* Posts Grid */}
       <MyPostsGrid 
         userId={session.user.id} 
