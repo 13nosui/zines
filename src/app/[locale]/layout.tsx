@@ -21,8 +21,8 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider messages={messages}>
-      <div className="min-h-screen flex flex-col">
-        <main className="flex-1 w-full">
+      <div className="min-h-screen flex flex-col h-screen overflow-hidden">
+        <main className="flex-1 w-full overflow-y-auto">
           {children}
         </main>
       </div>
