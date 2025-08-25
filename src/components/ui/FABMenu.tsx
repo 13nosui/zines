@@ -27,7 +27,7 @@ export function FABMenu({ hasNoPosts = false }: FABMenuProps) {
   if (hasNoPosts) {
     return (
       <motion.button
-        className="fixed bottom-6 right-6 w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center z-50"
+        className="fixed bottom-6 right-6 w-14 h-14 bg-primary text-primary-foreground rounded-full flex items-center justify-center z-50"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => handleNavigation('/create')}
@@ -61,7 +61,7 @@ export function FABMenu({ hasNoPosts = false }: FABMenuProps) {
 
       {/* Main FAB */}
       <motion.button
-        className="fixed bottom-6 right-6 w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center z-50"
+        className="fixed bottom-6 right-6 w-14 h-14 bg-primary text-primary-foreground rounded-full flex items-center justify-center z-50"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={toggleMenu}
