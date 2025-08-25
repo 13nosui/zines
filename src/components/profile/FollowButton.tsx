@@ -105,12 +105,12 @@ export function FollowButton({ userId, className }: FollowButtonProps) {
 
   return (
     <Button
-      size="sm"
+      size="md"
       color={isFollowing ? "default" : "primary"}
       variant={isFollowing ? "bordered" : "solid"}
       onPress={handleFollow}
       isLoading={isLoading}
-      className={className}
+      className={`min-h-unit-12 ${className}`}
     >
       {isFollowing ? 'Following' : 'Follow'}
     </Button>
