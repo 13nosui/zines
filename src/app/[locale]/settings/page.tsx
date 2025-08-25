@@ -223,7 +223,8 @@ export default function SettingsPage() {
                 errorMessage={usernameError}
                 isDisabled={isLoadingProfile || isSaving}
                 classNames={{
-                  input: "text-foreground"
+                  input: "text-foreground",
+                  label: "text-heroui-default-600"
                 }}
                 startContent={
                   <span className="material-symbols-rounded text-default-400">
@@ -318,7 +319,8 @@ export default function SettingsPage() {
             onSelectionChange={(keys) => setTheme(Array.from(keys)[0] as string)}
             className="max-w-full"
             classNames={{
-              value: "text-foreground"
+              value: "text-foreground",
+              label: "text-heroui-default-600"
             }}
           >
             <SelectItem key="system">
@@ -344,7 +346,8 @@ export default function SettingsPage() {
             onSelectionChange={(keys) => handleLocaleChange(Array.from(keys)[0] as string)}
             className="max-w-full"
             classNames={{
-              value: "text-foreground"
+              value: "text-foreground",
+              label: "text-heroui-default-600"
             }}
           >
             {locales.map((locale) => (
