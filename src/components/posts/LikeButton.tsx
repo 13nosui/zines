@@ -87,11 +87,11 @@ export function LikeButton({
     <div className={`flex items-center gap-1 ${className}`}>
       <Button
         isIconOnly
-        size="sm"
+        size="md"
         variant="light"
         onPress={handleLike}
         isLoading={isLoading}
-        className="min-w-unit-8 h-unit-8"
+        className="min-w-unit-12 h-unit-12"
         aria-label={isLiked ? 'Unlike' : 'Like'}
       >
         <Icon 

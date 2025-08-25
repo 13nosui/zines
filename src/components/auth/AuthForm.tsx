@@ -195,7 +195,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
             <p className="text-sm text-green-800 dark:text-green-200">{message}</p>
             {mode === 'sign-up' && (
               <p className="text-sm text-green-700 dark:text-green-300 mt-2">
-                Didn't receive the email? <Link href="/auth/resend-verification" className="underline font-medium">Click here to resend</Link>
+                Didn't receive the email? <Link href="/auth/resend-verification" className="underline font-medium inline-block py-2">Click here to resend</Link>
               </p>
             )}
           </div>
@@ -219,7 +219,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
                 touched.email && validationErrors.email 
                   ? 'border-red-500 focus:border-red-500 focus:ring-red-500' 
                   : 'border-gray-300 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500'
-              } px-3 py-2 placeholder-gray-400 shadow-sm focus:outline-none dark:bg-gray-800 dark:text-white sm:text-sm`}
+              } px-3 py-3 min-h-[48px] placeholder-gray-400 shadow-sm focus:outline-none dark:bg-gray-800 dark:text-white sm:text-sm`}
               placeholder={t('auth.emailPlaceholder')}
               aria-invalid={touched.email && !!validationErrors.email}
               aria-describedby={touched.email && validationErrors.email ? 'email-error' : undefined}
@@ -248,7 +248,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
                 touched.password && validationErrors.password 
                   ? 'border-red-500 focus:border-red-500 focus:ring-red-500' 
                   : 'border-gray-300 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500'
-              } px-3 py-2 placeholder-gray-400 shadow-sm focus:outline-none dark:bg-gray-800 dark:text-white sm:text-sm`}
+              } px-3 py-3 min-h-[48px] placeholder-gray-400 shadow-sm focus:outline-none dark:bg-gray-800 dark:text-white sm:text-sm`}
               placeholder={mode === 'sign-up' ? t('auth.passwordPlaceholder') : '••••••••'}
               aria-invalid={touched.password && !!validationErrors.password}
               aria-describedby={touched.password && validationErrors.password ? 'password-error' : undefined}
@@ -275,7 +275,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
         <button
           type="submit"
           disabled={loading || oauthLoading !== null}
-          className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+          className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-3 px-4 min-h-[48px] text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
         >
           {loading ? (
             <span className="flex items-center">
@@ -307,7 +307,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
               type="button"
               onClick={() => handleOAuthSignIn('google')}
               disabled={loading || oauthLoading !== null}
-              className="inline-flex w-full justify-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 py-2 px-4 text-sm font-medium text-gray-500 dark:text-gray-300 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+              className="inline-flex w-full justify-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 py-3 px-4 min-h-[48px] text-sm font-medium text-gray-500 dark:text-gray-300 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
             >
               {oauthLoading === 'google' ? (
                 <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -343,7 +343,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
               type="button"
               onClick={() => handleOAuthSignIn('github')}
               disabled={loading || oauthLoading !== null}
-              className="inline-flex w-full justify-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 py-2 px-4 text-sm font-medium text-gray-500 dark:text-gray-300 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+              className="inline-flex w-full justify-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 py-3 px-4 min-h-[48px] text-sm font-medium text-gray-500 dark:text-gray-300 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
             >
               {oauthLoading === 'github' ? (
                 <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

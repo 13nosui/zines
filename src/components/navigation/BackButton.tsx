@@ -50,7 +50,8 @@ export function BackButton({ onPress, variant = 'fab', className = '' }: BackBut
       isIconOnly
       variant="light"
       onPress={handleBack}
-      className={`rounded-full ${className}`}
+      className={`rounded-full min-w-unit-12 h-unit-12 ${className}`}
+      aria-label="Go back"
     >
       <span className="material-symbols-rounded">
         arrow_back

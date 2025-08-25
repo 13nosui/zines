@@ -56,6 +56,35 @@ body {
 }
 
 @layer components {
+  /* Minimum tap area styles for accessibility */
+  .min-tap-area {
+    position: relative;
+    min-width: 48px;
+    min-height: 48px;
+  }
+  
+  /* For elements that need visual size smaller than tap area */
+  .min-tap-area::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: max(100%, 48px);
+    height: max(100%, 48px);
+    z-index: -1;
+  }
+  
+  /* Apply min tap area to all interactive elements by default */
+  button:not(.no-min-tap),
+  a:not(.no-min-tap),
+  [role="button"]:not(.no-min-tap),
+  [onclick]:not(.no-min-tap),
+  input[type="checkbox"]:not(.no-min-tap),
+  input[type="radio"]:not(.no-min-tap) {
+    @apply min-tap-area;
+  }
+  
   /* Material Symbols Rounded styles */
   .material-symbols-rounded {
     font-variation-settings:
