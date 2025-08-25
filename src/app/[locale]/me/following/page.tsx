@@ -11,11 +11,11 @@ import { useAuth } from '@/components/providers/AuthProvider'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useInView } from 'react-intersection-observer'
 import { toast } from 'sonner'
+import { FollowButton } from '@/components/profile/FollowButton'
 
 interface Following {
-  id: string
-  created_at: string
-  following: {
+  following_id: string
+  profiles: {
     id: string
     username: string
     avatar_url: string
@@ -33,7 +33,6 @@ export default function FollowingPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [hasMore, setHasMore] = useState(true)
   const [page, setPage] = useState(0)
-  const [unfollowingIds, setUnfollowingIds] = useState<Set<string>>(new Set())
   const { ref, inView } = useInView()
   const supabase = createClientComponentClient()
   
@@ -44,27 +43,18 @@ export default function FollowingPage() {
     
     const { data, error } = await supabase
       .from('follows')
-      .select(`
-        id,
-        created_at,
-        following:following_id (
-          id,
-          username,
-          avatar_url,
-          bio
-        )
-      `)
+      .select('following_id, profiles:following_id(*)')
       .eq('follower_id', user.id)
       .order('created_at', { ascending: false })
       .range(pageNum * ITEMS_PER_PAGE, (pageNum + 1) * ITEMS_PER_PAGE - 1)
     
     if (error) {
       console.error('Error fetching following:', error)
-      toast.error(t('profile.errorLoadingFollowing'))
+      toast.error(t('profile.errorLoadingFollowing') || 'Error loading following')
       return []
     }
     
-    return (data || []) as any[]
+    return (data || []) as Following[]
   }, [user, supabase, t])
   
   useEffect(() => {
@@ -98,41 +88,17 @@ export default function FollowingPage() {
     loadMoreFollowing()
   }, [inView, hasMore, isLoading, page, fetchFollowing])
   
-  const handleUnfollow = async (followId: string, userId: string) => {
-    if (!user) return
-    
-    setUnfollowingIds(prev => new Set([...prev, userId]))
-    
-    const { error } = await supabase
-      .from('follows')
-      .delete()
-      .eq('id', followId)
-    
-    if (error) {
-      console.error('Error unfollowing:', error)
-      toast.error(t('profile.errorUnfollowing'))
-      setUnfollowingIds(prev => {
-        const newSet = new Set(prev)
-        newSet.delete(userId)
-        return newSet
-      })
-    } else {
-      setFollowing(prev => prev.filter(f => f.id !== followId))
-      toast.success(t('profile.unfollowSuccess'))
-    }
-  }
-  
   const handleBack = () => {
     router.push(`/${currentLocale}/me`)
   }
   
   const handleUserClick = (userId: string) => {
-    router.push(`/${currentLocale}/users/${userId}`)
+    router.push(`/${currentLocale}/user/${userId}`)
   }
   
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-[480px] mx-auto">
+      <div className="max-w-[600px] mx-auto">
         {/* Header */}
         <div className="flex items-center gap-3 p-4 bg-content1 border-b sticky top-0 z-10">
           <Button
@@ -143,6 +109,7 @@ export default function FollowingPage() {
           >
             arrow_back
           </Button>
+          <h1 className="text-xl font-semibold flex-1">{t('profile.following')}</h1>
         </div>
         
         {/* Content */}
@@ -169,39 +136,32 @@ export default function FollowingPage() {
           <div className="divide-y divide-default-200">
             {following.map((follow) => (
               <div
-                key={follow.id}
-                className="p-4 hover:bg-content2 transition-colors"
+                key={follow.following_id}
+                className="p-4 hover:bg-content2 transition-colors flex items-center gap-3"
               >
-                <div className="flex items-center gap-3">
-                  <Avatar
-                    src={follow.following.avatar_url || undefined}
-                    name={follow.following.username}
-                    className="w-12 h-12 cursor-pointer"
-                    onClick={() => handleUserClick(follow.following.id)}
-                  />
-                  <div 
-                    className="flex-1 min-w-0 cursor-pointer"
-                    onClick={() => handleUserClick(follow.following.id)}
-                  >
-                    <p className="font-medium text-sm">
-                      {follow.following.username}
+                <Avatar
+                  src={follow.profiles.avatar_url || undefined}
+                  name={follow.profiles.username}
+                  className="w-12 h-12 cursor-pointer flex-shrink-0"
+                  onClick={() => handleUserClick(follow.profiles.id)}
+                />
+                <div 
+                  className="flex-1 min-w-0 cursor-pointer"
+                  onClick={() => handleUserClick(follow.profiles.id)}
+                >
+                  <p className="font-medium text-sm">
+                    {follow.profiles.username}
+                  </p>
+                  {follow.profiles.bio && (
+                    <p className="text-xs text-default-500 line-clamp-1">
+                      {follow.profiles.bio}
                     </p>
-                    {follow.following.bio && (
-                      <p className="text-xs text-default-500 line-clamp-1">
-                        {follow.following.bio}
-                      </p>
-                    )}
-                  </div>
-                  <Button
-                    size="sm"
-                    variant="bordered"
-                    onPress={() => handleUnfollow(follow.id, follow.following.id)}
-                    isLoading={unfollowingIds.has(follow.following.id)}
-                    className="min-w-[80px]"
-                  >
-                    {t('profile.unfollow')}
-                  </Button>
+                  )}
                 </div>
+                <FollowButton 
+                  userId={follow.profiles.id}
+                  className="min-w-[100px]"
+                />
               </div>
             ))}
             

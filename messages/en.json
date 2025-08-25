@@ -135,7 +135,12 @@
     "logoutConfirmDescription": "You'll need to sign in again to access your account.",
     "noLikesYet": "You haven't liked any posts yet",
     "notFollowingAnyone": "You're not following anyone yet",
-    "noFollowersYet": "You don't have any followers yet"
+    "noFollowersYet": "You don't have any followers yet",
+    "follow": "Follow",
+    "unfollow": "Unfollow",
+    "errorLoadingFollowing": "Error loading following list",
+    "errorUnfollowing": "Error unfollowing user",
+    "unfollowSuccess": "Successfully unfollowed"
   },
   "legal": {
     "privacyTitle": "Privacy Policy",
