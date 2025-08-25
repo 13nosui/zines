@@ -88,5 +88,15 @@
     "description": "説明",
     "tags": "タグ",
     "noZines": "まだZINEはありません"
+  },
+  "profile": {
+    "following": "フォロー中",
+    "followers": "フォロワー",
+    "notFollowingAnyone": "まだ誰もフォローしていません",
+    "follow": "フォロー",
+    "unfollow": "フォロー解除",
+    "errorLoadingFollowing": "フォローリストの読み込みエラー",
+    "errorUnfollowing": "フォロー解除エラー",
+    "unfollowSuccess": "フォロー解除しました"
   }
 }
